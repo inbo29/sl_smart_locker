@@ -13,7 +13,8 @@
 https://inbo29.github.io/sl_smart_locker/
 ```
 
-> 최초 1회: 저장소 **Settings → Pages → Build and deployment → Source = "GitHub Actions"** 로 설정하세요.
+> 워크플로가 `enablement: true` 로 Pages를 자동으로 켭니다 — 보통 별도 설정이 필요 없습니다.
+> 만약 그래도 "Get Pages site failed / Not Found" 에러가 나면, 저장소 **Settings → Pages → Build and deployment → Source = "GitHub Actions"** 로 한 번만 지정한 뒤 Actions 탭에서 워크플로를 재실행(Re-run)하세요.
 
 ## 📱 화면 구성 (총 10개)
 

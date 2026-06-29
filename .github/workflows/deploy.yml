@@ -30,6 +30,8 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true   # Pages가 꺼져 있어도 워크플로가 자동으로 켭니다
 
       - name: Upload artifact (repo root)
         uses: actions/upload-pages-artifact@v3
