@@ -1,0 +1,11 @@
+# 원본 브랜드 자산 / 레퍼런스 (배포 불필요·대용량·저작권)
+Shoes-love-Rebranding-Guideline-2022-1.pdf
+TalkFile_Infobridge*.html
+
+# 로컬 설정 / 메모리 / 스킬
+.claude/
+
+# OS / 편집기
+.DS_Store
+Thumbs.db
+*.log

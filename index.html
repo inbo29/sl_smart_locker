@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHOES LOVE · Ухаалаг хадгалах локер — UI/UX дизайны баримт бичиг</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* ---- SHOES LOVE rebranding palette (from guideline) ---- */
+    --teal:        #00babe;   /* primary 80% */
+    --teal-bright: #40c1c7;
+    --teal-deep:   #047b7e;
+    --ink:         #0a3537;   /* deep teal-black */
+    --ink-2:       #0e4548;
+    --yellow:      #ffd400;   /* accent 20% */
+    --coral:       #e66558;
+    --sage:        #d8e1ce;
+    --sky:         #eef9fe;
+    --gray-700:    #77787b;
+    --gray-300:    #c6c8ca;
+    --gray-200:    #e6e7e8;
+
+    --bg:        #e7f4f6;
+    --canvas:    #f3fbfc;
+    --frame:     #ffffff;
+    --line:      #d7e6e8;
+    --line-2:    #bcd6d9;
+    --text:      #143033;
+    --text-soft: #4d6a6c;
+    --text-mute: #8aa3a5;
+
+    --disp: 'Montserrat', system-ui, sans-serif;
+    --body: 'Inter', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:var(--body);color:var(--text);background:var(--bg);
+    display:flex;min-height:100vh;-webkit-font-smoothing:antialiased;
+  }
+
+  /* ============ SIDEBAR ============ */
+  .sidebar{
+    width:286px;flex-shrink:0;background:var(--ink);color:#dff1f2;
+    padding:26px 20px 40px;position:sticky;top:0;height:100vh;overflow-y:auto;
+    border-right:1px solid #052528;
+  }
+  .sb-brand{display:flex;align-items:center;gap:11px;margin-bottom:6px}
+  .mark{
+    width:38px;height:38px;border-radius:11px;background:var(--teal);
+    position:relative;flex-shrink:0;box-shadow:0 6px 16px -6px rgba(0,186,190,.7);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .mark svg{width:24px;height:24px;display:block}
+  .mark::after{
+    content:"";position:absolute;top:-3px;right:-3px;width:13px;height:13px;
+    border-radius:50%;background:var(--yellow);border:2px solid var(--ink);
+  }
+  .wordmark{font-family:var(--disp);font-weight:900;font-size:18px;letter-spacing:-.02em;line-height:1;color:#fff}
+  .wordmark span{color:var(--teal-bright)}
+  .sb-kicker{font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:#5f9396;margin:14px 0 4px}
+  .sb-sub{font-size:12px;color:#9dc4c6;line-height:1.6;padding-bottom:18px;border-bottom:1px dashed #1c4c4f;margin-bottom:6px}
+  .sb-lang{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--ink);background:var(--yellow);padding:3px 8px;border-radius:20px;font-weight:700;margin-top:10px}
+
+  .nav-group{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:#5f9396;margin:22px 0 8px;display:flex;align-items:center;gap:8px}
+  .nav-group::after{content:"";flex:1;height:1px;background:#1c4c4f}
+  .nav-item{
+    display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:8px;
+    cursor:pointer;font-size:13px;color:#bfdcde;margin-bottom:2px;
+    border:1px solid transparent;transition:background .15s,color .15s;
+  }
+  .nav-item:hover{background:#103e41;color:#fff}
+  .nav-item.active{background:var(--teal);color:#022a2c;font-weight:600}
+  .nav-num{font-family:var(--mono);font-size:11px;opacity:.65;width:30px;font-weight:600}
+  .nav-item.active .nav-num{opacity:1;color:#022a2c}
+  .nav-item.cover.active{background:var(--yellow);color:var(--ink)}
+  .sb-foot{margin-top:26px;padding-top:16px;border-top:1px dashed #1c4c4f;font-size:11px;color:#6fa3a5;line-height:1.7}
+  .sb-foot b{color:#cfe9ea;font-weight:600}
+
+  /* ============ MAIN CANVAS ============ */
+  .main{flex:1;min-width:0;padding:34px 44px 90px}
+  .screen{display:none}
+  .screen.active{display:block;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .scr-head{margin-bottom:20px}
+  .scr-meta{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--teal-deep);font-weight:600}
+  .scr-title{font-family:var(--disp);font-size:27px;font-weight:800;letter-spacing:-.02em;margin:5px 0 7px;color:var(--ink)}
+  .scr-desc{font-size:13.5px;color:var(--text-soft);line-height:1.7;max-width:780px}
+
+  /* spec grid: device stage (left) + explanation panel (right) */
+  .spec{display:grid;grid-template-columns:minmax(420px,1fr) 452px;gap:26px;align-items:start}
+  .stage{
+    background:
+      radial-gradient(120% 80% at 50% 0%, rgba(0,186,190,.10), transparent 60%),
+      linear-gradient(160deg,#eafafb,#dcf1f3);
+    border:1px solid var(--line);border-radius:18px;padding:34px 24px;
+    display:flex;flex-direction:column;align-items:center;gap:16px;min-height:560px;justify-content:center;
+    position:relative;overflow:hidden;
+  }
+  .stage::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background-image:radial-gradient(rgba(0,186,190,.16) 1px,transparent 1px);
+    background-size:18px 18px;opacity:.4;
+  }
+  .stage-tag{position:absolute;top:14px;left:16px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--teal-deep);background:#fff;border:1px solid var(--line);padding:4px 9px;border-radius:20px;z-index:2}
+
+  /* ============ KIOSK FRAME (portrait touchscreen) ============ */
+  .kiosk{
+    width:352px;background:#06292b;border-radius:30px;padding:16px 16px 22px;
+    box-shadow:0 40px 70px -30px rgba(4,40,42,.7),0 0 0 1px rgba(255,255,255,.04) inset;
+    position:relative;z-index:1;
+  }
+  .kiosk::after{content:"";position:absolute;bottom:9px;left:50%;transform:translateX(-50%);width:54px;height:5px;border-radius:3px;background:#1d4f52}
+  .k-screen{
+    aspect-ratio:9/15.5;background:#fff;border-radius:16px;overflow:hidden;
+    display:flex;flex-direction:column;position:relative;
+  }
+
+  /* ============ PHONE FRAME ============ */
+  .phone{
+    width:296px;background:#06292b;border-radius:40px;padding:12px;
+    box-shadow:0 40px 70px -30px rgba(4,40,42,.7),0 0 0 1px rgba(255,255,255,.04) inset;
+    position:relative;z-index:1;
+  }
+  .p-screen{aspect-ratio:9/19;background:#fff;border-radius:30px;overflow:hidden;display:flex;flex-direction:column;position:relative}
+  .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:24px;background:#06292b;border-radius:0 0 16px 16px;z-index:30}
+
+  /* status bar */
+  .statusbar{display:flex;justify-content:space-between;align-items:center;padding:8px 18px 6px;font-family:var(--mono);font-size:10px;color:var(--ink);font-weight:600}
+  .statusbar .dots{display:flex;gap:4px;align-items:center}
+  .statusbar .dots i{width:5px;height:5px;border-radius:50%;background:var(--ink);display:inline-block;font-style:normal}
+
+  /* ============ in-screen UI primitives ============ */
+  .ui-top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--gray-200)}
+  .ui-top .ttl{font-family:var(--disp);font-weight:800;font-size:15px;color:var(--ink)}
+  .ui-back{width:26px;height:26px;border-radius:8px;border:1px solid var(--gray-200);display:flex;align-items:center;justify-content:center;color:var(--text-soft);font-size:14px}
+  .qr-badge{display:flex;align-items:center;gap:6px;background:var(--ink);color:#fff;font-size:9.5px;font-family:var(--mono);letter-spacing:.06em;padding:5px 9px;border-radius:8px}
+  .qr-badge svg{width:14px;height:14px}
+
+  .ui-body{flex:1;padding:16px;display:flex;flex-direction:column;gap:13px;overflow:hidden}
+  .ui-label{font-size:11px;color:var(--text-soft);font-weight:600;letter-spacing:.01em}
+  .ui-input{height:46px;border:1.5px solid var(--line-2);border-radius:11px;display:flex;align-items:center;padding:0 14px;font-family:var(--mono);font-size:16px;color:var(--ink);letter-spacing:.04em;background:#fbfeff}
+  .ui-input .ph{color:var(--gray-300)}
+  .ui-input .caret{width:2px;height:20px;background:var(--teal);margin-left:1px;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  .keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:2px}
+  .keypad button{height:40px;border:1px solid var(--gray-200);background:#fff;border-radius:10px;font-family:var(--mono);font-size:16px;font-weight:600;color:var(--ink)}
+  .keypad button.alt{background:var(--sky);color:var(--teal-deep)}
+
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:13px 18px;border-radius:12px;border:none;cursor:pointer;
+    font-family:var(--disp);font-weight:700;font-size:14px;background:var(--teal);color:#fff;
+    box-shadow:0 8px 18px -8px rgba(0,186,190,.8);
+  }
+  .btn.full{width:100%}
+  .btn.ghost{background:#fff;color:var(--teal-deep);border:1.5px solid var(--teal);box-shadow:none}
+  .btn.dark{background:var(--ink);box-shadow:none}
+  .btn.yellow{background:var(--yellow);color:var(--ink);box-shadow:0 8px 18px -8px rgba(255,212,0,.8)}
+  .btn.sm{padding:9px 12px;font-size:12px;border-radius:9px}
+  .btn-row{display:flex;gap:9px}
+  .btn-row .btn{flex:1}
+
+  .instr{background:var(--sky);border:1px dashed var(--teal);border-radius:12px;padding:12px 14px;font-size:12.5px;color:var(--teal-deep);line-height:1.6;text-align:center;font-weight:500}
+
+  /* box assigned card */
+  .box-card{border:2px solid var(--teal);border-radius:16px;background:linear-gradient(160deg,#effdfd,#d9f6f7);padding:18px;text-align:center;position:relative}
+  .box-card .open-tag{display:inline-block;margin-bottom:8px;font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:#fff;background:var(--teal);padding:3px 10px;border-radius:20px;font-weight:700}
+  .box-card .lbl{font-size:11px;color:var(--teal-deep);font-weight:600;letter-spacing:.05em}
+  .box-card .no{font-family:var(--disp);font-weight:900;font-size:46px;color:var(--ink);line-height:1;margin:4px 0 2px}
+  .box-card .sub{font-size:11px;color:var(--text-soft)}
+
+  /* list rows */
+  .list{display:flex;flex-direction:column;gap:8px;overflow-y:auto}
+  .row-item{display:flex;align-items:center;gap:11px;border:1px solid var(--gray-200);border-radius:11px;padding:10px 12px;background:#fff}
+  .row-item .rno{width:38px;height:38px;border-radius:10px;background:var(--ink);color:#fff;font-family:var(--disp);font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .row-item .rinfo{flex:1;min-width:0}
+  .row-item .rphone{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-weight:600}
+  .row-item .rmeta{font-size:10.5px;color:var(--text-mute);margin-top:2px}
+  .pill{font-size:9.5px;font-family:var(--mono);letter-spacing:.04em;padding:3px 8px;border-radius:20px;font-weight:700;white-space:nowrap}
+  .pill.ok{background:#d9f6f7;color:var(--teal-deep)}
+  .pill.wait{background:var(--gray-200);color:var(--gray-700)}
+  .pill.done{background:#e7efe2;color:#5a7a4e}
+  .pill.coral{background:#fbe2de;color:#b8443a}
+
+  .driver-chip{display:flex;align-items:center;gap:9px;background:var(--ink);color:#fff;border-radius:12px;padding:9px 12px}
+  .driver-chip .av{width:30px;height:30px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:800;font-size:13px;color:#022a2c}
+  .driver-chip .dn{font-size:12.5px;font-weight:700;line-height:1.2}
+  .driver-chip .dr{font-size:9.5px;color:#9dc4c6;font-family:var(--mono);letter-spacing:.06em}
+
+  /* driver-auth popup (kiosk modal) + QR + spinner */
+  .kmodal{position:absolute;inset:0;z-index:20;background:rgba(6,41,43,.74);display:flex;align-items:center;justify-content:center;padding:18px;animation:fade .22s ease}
+  .kmodal[hidden]{display:none}
+  .kmodal-card{background:#fff;border-radius:18px;padding:24px 20px 20px;width:100%;text-align:center;display:flex;flex-direction:column;align-items:center;gap:11px;position:relative;box-shadow:0 24px 50px -18px rgba(0,0,0,.55)}
+  .kmodal-x{position:absolute;top:9px;right:13px;border:none;background:none;font-size:22px;color:var(--text-mute);cursor:pointer;line-height:1}
+  .kmodal-kicker{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--teal-deep);font-weight:700}
+  .auth-qr{width:138px;height:138px;background:#fff;border:2px solid var(--ink);border-radius:14px;padding:10px}
+  .auth-qr svg{width:100%;height:100%;display:block}
+  .auth-sub{font-size:12.5px;color:var(--text-soft);line-height:1.6;margin:0;max-width:218px}
+  .auth-sub b{color:var(--teal-deep)}
+  .auth-wait{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--teal-deep);font-family:var(--mono)}
+  .spin{width:14px;height:14px;border:2px solid var(--gray-300);border-top-color:var(--teal);border-radius:50%;display:inline-block;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .demo-auth{cursor:pointer;margin-top:4px}
+
+  /* idle/ad video area */
+  .ad-video{flex:1;position:relative;background:linear-gradient(150deg,var(--teal),#0090a8 60%,var(--ink));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;overflow:hidden}
+  .ad-video::before{content:"";position:absolute;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(255,212,0,.35),transparent 65%);top:-60px;right:-70px}
+  .ad-shoe{width:120px;height:120px;display:flex;align-items:center;justify-content:center}
+  .ad-shoe svg{width:120px;height:auto;filter:drop-shadow(0 10px 20px rgba(0,0,0,.25))}
+  .ad-word{font-family:var(--disp);font-weight:900;font-size:26px;color:#fff;letter-spacing:-.02em;text-align:center;line-height:1}
+  .ad-word span{color:var(--yellow)}
+  .ad-tag{font-size:11px;color:#cdeff0;letter-spacing:.18em;font-family:var(--mono)}
+  .ad-dots{position:absolute;bottom:64px;display:flex;gap:7px;z-index:2}
+  .ad-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.4);font-style:normal}
+  .ad-dots i.on{background:var(--yellow);width:18px;border-radius:4px}
+  .ad-hint{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:#fff;font-size:12px;font-weight:600;letter-spacing:.04em;z-index:2}
+  .ad-hint .tap{display:inline-block;width:30px;height:30px;border:2px solid var(--yellow);border-radius:50%;margin-bottom:5px;position:relative;animation:tap 1.6s ease infinite}
+  @keyframes tap{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.8);opacity:.6}}
+  .ad-actions{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.96);padding:14px;display:flex;gap:10px;border-top:1px solid var(--gray-200);z-index:5}
+  .ad-actions .btn{flex:1;flex-direction:column;gap:4px;padding:14px 8px;cursor:pointer}
+  .ad-actions .btn .ico{font-size:18px}
+  .ad-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#06292b;display:none;z-index:1}
+  .ad-vid.on{display:block}
+  .ad-fallback{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:0}
+  .ad-qr{position:absolute;top:12px;right:12px;z-index:6;cursor:pointer}
+  .kiosk-loc{position:absolute;top:12px;left:12px;z-index:6;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:10px;font-family:var(--mono);letter-spacing:.03em;padding:5px 10px;border-radius:20px;display:flex;align-items:center;gap:4px;max-width:62%}
+  .kiosk-loc b{color:var(--yellow);font-weight:700}
+  .float-note{position:absolute;top:42px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:10px;font-family:var(--mono);letter-spacing:.06em;padding:4px 10px;border-radius:20px;z-index:6;white-space:nowrap;opacity:.92}
+
+  /* QR scanner (app) */
+  .scanner{flex:1;background:#072a2c;position:relative;display:flex;align-items:center;justify-content:center}
+  .scan-box{width:170px;height:170px;position:relative}
+  .scan-box span{position:absolute;width:26px;height:26px;border:3px solid var(--yellow)}
+  .scan-box .tl{top:0;left:0;border-right:none;border-bottom:none;border-radius:8px 0 0 0}
+  .scan-box .tr{top:0;right:0;border-left:none;border-bottom:none;border-radius:0 8px 0 0}
+  .scan-box .bl{bottom:0;left:0;border-right:none;border-top:none;border-radius:0 0 0 8px}
+  .scan-box .br{bottom:0;right:0;border-left:none;border-top:none;border-radius:0 0 8px 0}
+  .scan-line{position:absolute;left:6px;right:6px;height:2px;background:var(--yellow);box-shadow:0 0 12px var(--yellow);top:50%;animation:scan 2s ease-in-out infinite}
+  @keyframes scan{0%,100%{top:8%}50%{top:92%}}
+  .scan-qr{width:96px;height:96px;opacity:.25}
+  .scan-hint{position:absolute;bottom:26px;left:0;right:0;text-align:center;color:#cdeff0;font-size:12px}
+
+  /* success overlay */
+  .success{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center}
+  .success .ring{width:78px;height:78px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;box-shadow:0 14px 30px -10px rgba(0,186,190,.8)}
+  .success .ring svg{width:40px;height:40px}
+  .success h4{font-family:var(--disp);font-weight:800;font-size:18px;color:var(--ink);margin:4px 0 0}
+  .success p{font-size:12.5px;color:var(--text-soft);line-height:1.6;margin:0}
+  .success .big{font-family:var(--disp);font-weight:900;font-size:34px;color:var(--teal-deep)}
+
+  /* map */
+  .map{flex:1;position:relative;background:linear-gradient(135deg,#dff1f3,#eef9fe);overflow:hidden}
+  .map .road{position:absolute;background:#fff;opacity:.9}
+  .map .pin{position:absolute;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center}
+  .map .pin .dot{width:26px;height:26px;border-radius:50% 50% 50% 2px;transform:rotate(45deg);background:var(--teal);border:2px solid #fff;box-shadow:0 6px 12px -4px rgba(0,0,0,.4)}
+  .map .pin.alert .dot{background:var(--coral)}
+  .map .pin .cnt{position:absolute;top:-10px;right:-10px;background:var(--yellow);color:var(--ink);font-family:var(--mono);font-size:9px;font-weight:700;border-radius:20px;padding:1px 5px;z-index:2}
+  .sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;padding:14px 14px 18px;box-shadow:0 -10px 24px -16px rgba(0,0,0,.3);z-index:6}
+  .sheet .grab{width:36px;height:4px;border-radius:2px;background:var(--gray-300);margin:0 auto 12px}
+  .sheet-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .sheet-head .st{font-family:var(--disp);font-weight:800;font-size:13px;color:var(--ink)}
+  .sheet-head .sv{font-size:10.5px;color:var(--text-mute);font-family:var(--mono)}
+  /* detailed map scenery */
+  .map .block{position:absolute;background:#fff;opacity:.6;border-radius:3px}
+  .map .park{position:absolute;background:var(--sage);opacity:.75;border-radius:10px}
+  .map .park::after{content:"🌳";position:absolute;top:4px;left:6px;font-size:11px;opacity:.7}
+  .map .river{position:absolute;background:linear-gradient(90deg,#a9dde6,#c4ebf0);opacity:.9}
+  .map-route{position:absolute;inset:0;z-index:2;pointer-events:none}
+  .map .here{position:absolute;width:15px;height:15px;border-radius:50%;background:#2563eb;border:3px solid #fff;transform:translate(-50%,-50%);z-index:4;box-shadow:0 2px 5px rgba(0,0,0,.3)}
+  .map .here::before{content:"";position:absolute;inset:-7px;border-radius:50%;background:rgba(37,99,235,.22);animation:ping 1.8s ease-out infinite}
+  @keyframes ping{0%{transform:scale(.6);opacity:.8}100%{transform:scale(1.6);opacity:0}}
+  .map .pin{z-index:3}
+  .map .pin .lbl{position:absolute;top:27px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:8.5px;font-family:var(--mono);font-weight:600;background:#fff;color:var(--ink);padding:2px 6px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+  .map-search{position:absolute;top:10px;left:10px;right:10px;z-index:5;background:#fff;border-radius:12px;padding:9px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 6px 14px -6px rgba(0,0,0,.3);font-size:12px;color:var(--text-mute)}
+  .map-search svg{width:15px;height:15px;color:var(--teal-deep);flex-shrink:0}
+  .map-filter{position:absolute;top:52px;left:10px;right:10px;z-index:5;display:flex;gap:6px;overflow:hidden}
+  .map-zoom{position:absolute;right:10px;top:94px;display:flex;flex-direction:column;z-index:5;border-radius:10px;overflow:hidden;box-shadow:0 4px 12px -4px rgba(0,0,0,.3)}
+  .map-zoom button{width:32px;height:32px;border:none;background:#fff;font-size:17px;color:var(--ink);font-weight:700;cursor:pointer;line-height:1}
+  .map-zoom button+button{border-top:1px solid var(--gray-200)}
+  .map-gps{position:absolute;right:10px;top:162px;width:32px;height:32px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;z-index:5;box-shadow:0 4px 12px -4px rgba(0,0,0,.3);color:var(--teal-deep)}
+  .map-gps svg{width:17px;height:17px}
+
+  /* mini table (kiosk A5) */
+  .mtable{width:100%;border-collapse:collapse;font-size:10.5px}
+  .mtable th{font-family:var(--mono);font-size:9px;letter-spacing:.06em;color:var(--text-mute);text-align:left;padding:7px 8px;border-bottom:1.5px solid var(--gray-200);font-weight:600}
+  .mtable td{padding:8px;border-bottom:1px solid var(--gray-200);color:var(--text);vertical-align:middle}
+  .mtable td.bno{font-family:var(--disp);font-weight:800;color:var(--ink)}
+  .mtable td.ph{font-family:var(--mono);color:var(--text-soft)}
+  .filter-row{display:flex;gap:6px;margin-bottom:4px;flex-wrap:wrap}
+  .chip{font-size:10px;font-family:var(--mono);padding:4px 10px;border-radius:20px;border:1px solid var(--gray-200);color:var(--text-soft);background:#fff}
+  .chip.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+
+  /* notification cards */
+  .noti{display:flex;gap:11px;border:1px solid var(--gray-200);border-radius:13px;padding:12px;background:#fff;position:relative}
+  .noti.new{border-color:var(--teal);background:#f3fdfd}
+  .noti .ic{width:38px;height:38px;border-radius:11px;background:var(--sky);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--teal-deep)}
+  .noti .ic svg{width:20px;height:20px}
+  .noti .nt{font-size:12.5px;font-weight:700;color:var(--ink)}
+  .noti .nm{font-size:11px;color:var(--text-soft);line-height:1.5;margin-top:3px}
+  .noti .ntime{font-family:var(--mono);font-size:9.5px;color:var(--text-mute);margin-top:5px}
+  .noti .ndot{position:absolute;top:11px;right:11px;width:8px;height:8px;border-radius:50%;background:var(--coral)}
+
+  /* driver app login (B0) */
+  .login{flex:1;display:flex;flex-direction:column}
+  .login-brand{background:linear-gradient(150deg,var(--teal),var(--ink));padding:36px 22px 30px;display:flex;flex-direction:column;align-items:center;gap:10px;color:#fff}
+  .login-brand .mark{width:54px;height:54px;border-radius:16px}
+  .login-brand .mark svg{width:32px;height:32px}
+  .login-word{font-family:var(--disp);font-weight:900;font-size:23px;letter-spacing:-.02em}
+  .login-word span{color:var(--yellow)}
+  .login-role{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:#bfe9ea}
+  .login-form{padding:22px 20px 6px;display:flex;flex-direction:column;gap:7px}
+  .login-form .ui-label{margin-top:8px}
+  .login-pw{font-family:var(--body);font-size:18px;letter-spacing:.22em;color:var(--ink)}
+  .login-links{display:flex;justify-content:space-between;font-size:11px;color:var(--teal-deep);margin-top:12px;font-weight:600}
+  .login-links span{cursor:pointer}
+  .login-foot{margin-top:auto;padding:14px 20px 22px;text-align:center;font-size:10.5px;color:var(--text-mute);line-height:1.55}
+
+  /* interactive A2 (drop-off) */
+  [hidden]{display:none!important}
+  .a2-main,.a3-main{flex:1;display:flex;flex-direction:column;gap:13px}
+  .a2-success,.a3-success{flex:1}
+  input.ui-input{font-family:var(--mono);outline:none}
+  input.ui-input::placeholder{color:var(--gray-300)}
+  input.ui-input:focus{border-color:var(--teal)}
+  .a2-shake{animation:shake .32s}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  .countdown{font-family:var(--mono);font-size:11px;color:var(--text-mute)}
+
+  /* driver app bottom tab bar */
+  .tabbar{display:flex;align-items:flex-end;border-top:1px solid var(--gray-200);background:#fff;padding:8px 6px 11px;gap:2px}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9px;line-height:1.1;color:var(--text-mute);cursor:pointer;font-weight:600;text-align:center}
+  .tab svg{width:21px;height:21px}
+  .tab.active{color:var(--teal-deep)}
+  .tab.qr{color:var(--teal-deep)}
+  .tab.qr .ic{width:38px;height:38px;border-radius:13px;background:var(--teal);display:flex;align-items:center;justify-content:center;margin-top:-9px;margin-bottom:2px;box-shadow:0 7px 16px -6px rgba(0,186,190,.95);color:#fff}
+  .tab.qr .ic svg{width:20px;height:20px}
+
+  /* B3 compact horizontal location cards */
+  .sheet .hscroll{display:flex;gap:9px;overflow-x:auto;padding-bottom:3px}
+  .loc-card{flex:0 0 156px;border:1px solid var(--gray-200);border-radius:13px;padding:10px 11px;background:#fff}
+  .loc-card .lc-top{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  .loc-card .lc-no{width:26px;height:26px;border-radius:8px;background:var(--ink);color:#fff;font-family:var(--disp);font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .loc-card .lc-no.alert{background:var(--coral)}
+  .loc-card .lc-name{font-size:12px;font-weight:700;color:var(--ink);line-height:1.15}
+  .loc-card .lc-dist{font-size:10px;color:var(--text-mute);font-family:var(--mono)}
+  .loc-card .lc-meta{font-size:10px;color:var(--text-soft);margin-bottom:9px;line-height:1.4;min-height:27px}
+  .loc-card .btn{width:100%;padding:7px;font-size:11px;border-radius:9px}
+
+  /* A4 kiosk QR screen */
+  .a4-qr{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;padding:26px 22px;text-align:center}
+  .a4-qr-ttl{font-family:var(--disp);font-weight:800;font-size:17px;color:var(--ink);margin:4px 0 0}
+  .a4-qr-sub{font-size:12.5px;color:var(--text-soft);line-height:1.6;margin:0;max-width:232px}
+  .a4-qr-sub b{color:var(--teal-deep)}
+  /* B2 scan / list states */
+  .b2-scan{flex:1;display:flex;flex-direction:column;min-height:0;background:#072a2c}
+  .b2-list{flex:1;display:flex;flex-direction:column;min-height:0;background:#fff}
+
+  /* ============ EXPLANATION PANEL (right, full frame) ============ */
+  .panel{
+    background:var(--frame);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    box-shadow:0 22px 48px -34px rgba(4,40,42,.4);position:sticky;top:24px;
+  }
+  .panel-head{background:var(--ink);color:#fff;padding:16px 18px;display:flex;align-items:flex-start;gap:11px}
+  .panel-head .pk{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--teal-bright);font-weight:600}
+  .panel-head h3{font-family:var(--disp);font-weight:800;font-size:15.5px;margin:4px 0 0;line-height:1.35}
+  .panel-head .pn{margin-left:auto;font-family:var(--disp);font-weight:900;font-size:13px;color:var(--ink);background:var(--yellow);border-radius:9px;padding:5px 9px;flex-shrink:0}
+  .panel-body{padding:6px 18px 20px}
+  .blk{padding:15px 0;border-bottom:1px dashed var(--line)}
+  .blk:last-child{border-bottom:none}
+  .blk h4{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--teal-deep);margin:0 0 10px;display:flex;align-items:center;gap:7px;font-weight:700}
+  .blk h4::before{content:"";width:14px;height:2px;background:var(--teal);display:inline-block}
+  .blk p{font-size:13px;line-height:1.7;color:var(--text);margin:0}
+
+  .flow{list-style:none;margin:0;padding:0;counter-reset:f}
+  .flow li{counter-increment:f;position:relative;padding:0 0 13px 34px;font-size:12.5px;line-height:1.6;color:var(--text)}
+  .flow li:last-child{padding-bottom:0}
+  .flow li::before{content:counter(f);position:absolute;left:0;top:-1px;width:22px;height:22px;border-radius:50%;background:var(--sky);border:1.5px solid var(--teal);color:var(--teal-deep);font-family:var(--mono);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .flow li::after{content:"";position:absolute;left:10.5px;top:23px;bottom:3px;width:1.5px;background:var(--line-2)}
+  .flow li:last-child::after{display:none}
+  .flow li b{color:var(--ink);font-weight:700}
+
+  .ix{width:100%;border-collapse:collapse;font-size:12px}
+  .ix td{padding:8px 0;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5}
+  .ix tr:last-child td{border-bottom:none}
+  .ix .el{font-weight:700;color:var(--ink);white-space:nowrap;padding-right:12px}
+  .ix .ac{color:var(--text-soft)}
+  .goto{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:10.5px;font-weight:700;color:var(--teal-deep);background:#d9f6f7;border:1px solid var(--teal);border-radius:6px;padding:1px 7px;cursor:pointer;white-space:nowrap}
+  .goto:hover{background:var(--teal);color:#fff}
+
+  .data{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+  .data li{font-size:12px;line-height:1.55;color:var(--text-soft);padding-left:18px;position:relative}
+  .data li::before{content:"›";position:absolute;left:2px;top:0;color:var(--teal);font-weight:800}
+  .data code{font-family:var(--mono);font-size:11px;background:var(--sky);color:var(--teal-deep);padding:1px 6px;border-radius:5px;font-weight:600}
+
+  .pnote{background:var(--sky);border:1px dashed var(--teal);border-radius:11px;padding:12px 14px;font-size:12px;color:var(--teal-deep);line-height:1.65;margin-top:15px}
+  .pnote b{color:var(--ink)}
+
+  /* ============ COVER ============ */
+  .cover-hero{
+    background:
+      radial-gradient(110% 120% at 88% -10%, rgba(255,212,0,.18), transparent 45%),
+      radial-gradient(90% 120% at 0% 110%, rgba(0,186,190,.22), transparent 50%),
+      linear-gradient(150deg,var(--ink),#0c4044);
+    border-radius:22px;padding:54px 50px;color:#fff;position:relative;overflow:hidden;margin-bottom:26px;
+  }
+  .cover-hero .grid-motif{position:absolute;right:40px;top:50%;transform:translateY(-50%);display:grid;grid-template-columns:repeat(3,46px);gap:9px;opacity:.9}
+  .cover-hero .grid-motif i{width:46px;height:46px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);font-style:normal;display:flex;align-items:center;justify-content:center}
+  .cover-hero .grid-motif i.fill{background:var(--teal);border-color:var(--teal)}
+  .cover-hero .grid-motif i.yel{background:var(--yellow)}
+  .cover-hero .grid-motif i svg{width:24px;height:24px}
+  .cover-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.24em;color:var(--teal-bright);margin-bottom:18px}
+  .cover-hero h1{font-family:var(--disp);font-weight:900;font-size:46px;line-height:1.08;letter-spacing:-.03em;margin:0 0 18px;max-width:620px}
+  .cover-hero h1 em{font-style:normal;color:var(--yellow)}
+  .cover-hero p{font-size:14.5px;line-height:1.8;color:#cfe9ea;max-width:560px;margin:0}
+  .cover-meta{display:flex;gap:26px;margin-top:30px;font-family:var(--mono);font-size:11px;color:#9dc4c6;flex-wrap:wrap}
+  .cover-meta b{color:#fff;font-weight:600;display:block;font-size:15px;font-family:var(--disp)}
+
+  .cover-cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:26px}
+  .sys-card{border:1px solid var(--line);border-radius:16px;background:#fff;padding:24px;position:relative;overflow:hidden}
+  .sys-card .tag{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--teal-deep);font-weight:700}
+  .sys-card h3{font-family:var(--disp);font-weight:800;font-size:20px;color:var(--ink);margin:8px 0 6px}
+  .sys-card p{font-size:13px;color:var(--text-soft);line-height:1.65;margin:0 0 16px}
+  .sys-card .scr-links{display:flex;flex-wrap:wrap;gap:6px}
+  .sys-card .scr-links .goto{font-size:11px}
+  .sys-card .corner{position:absolute;top:-30px;right:-30px;width:110px;height:110px;border-radius:50%;background:var(--sky)}
+  .sys-card.b .corner{background:#fff7d6}
+
+  .cover-row{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}
+  .card{border:1px solid var(--line);border-radius:16px;background:#fff;padding:22px}
+  .card h4{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--teal-deep);margin:0 0 16px;font-weight:700}
+  .swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .sw{border-radius:11px;overflow:hidden;border:1px solid var(--line)}
+  .sw .chipc{height:54px}
+  .sw .info{padding:7px 9px}
+  .sw .nm{font-size:11px;font-weight:700;color:var(--ink)}
+  .sw .hx{font-family:var(--mono);font-size:9.5px;color:var(--text-mute)}
+  .sw .role{font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;color:var(--teal-deep);margin-top:1px}
+  .type-row{display:flex;flex-direction:column;gap:14px}
+  .type-item .tlabel{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;color:var(--text-mute);margin-bottom:2px}
+  .type-item .tdisp{font-family:var(--disp);font-weight:900;font-size:26px;color:var(--ink);letter-spacing:-.02em;line-height:1}
+  .type-item .tbody{font-family:var(--body);font-size:15px;color:var(--text);font-weight:500}
+  .type-item .tmono{font-family:var(--mono);font-size:14px;color:var(--teal-deep)}
+
+  .legend-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+  .legend-grid .pill{font-size:9.5px}
+
+  /* ============ Responsive ============ */
+  @media (max-width:1180px){
+    .spec{grid-template-columns:1fr}
+    .panel{position:relative;top:0}
+  }
+  @media (max-width:900px){
+    body{flex-direction:column}
+    .sidebar{width:100%;height:auto;position:relative}
+    .main{padding:24px}
+    .cover-cols,.cover-row{grid-template-columns:1fr}
+    .cover-hero{padding:34px 24px}
+    .cover-hero h1{font-size:32px}
+    .cover-hero .grid-motif{display:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ SIDEBAR ============ -->
+<aside class="sidebar">
+  <div class="sb-brand">
+    <div class="mark">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M2 15.5c0-1.2.9-2 2-2h2.2c1 0 1.9-.4 2.7-1l3.1-2.4c1.2-.9 2.8-.8 4 .2l2.4 2c.9.7 1.6 1 2.6 1.2 1 .2 1.8 1 1.8 2v1.3c0 1-.8 1.7-1.8 1.7H3.8C2.8 19.5 2 18.7 2 17.7v-2.2Z" fill="#fff"/><circle cx="8.5" cy="9.5" r="2.4" fill="#ffd400"/></svg>
+    </div>
+    <div class="wordmark">SHOES<br><span>LOVE</span></div>
+  </div>
+  <div class="sb-kicker">UI / UX DESIGN DOC</div>
+  <div class="sb-sub">Ухаалаг хадгалах локерын систем — дэлгэц бүрийн зураглал.</div>
+  <span class="sb-lang">◆ Бүх тайлбар: Монгол хэл</span>
+
+  <div class="nav-group">Эхлэл</div>
+  <div class="nav-item cover active" data-target="cover"><span class="nav-num">00</span>Брэнд ба тойм</div>
+
+  <div class="nav-group">Смарт дэлгэц · Киоск</div>
+  <div class="nav-item" data-target="a1"><span class="nav-num">A1</span>Сурталчилгаа / хүлээлт</div>
+  <div class="nav-item" data-target="a2"><span class="nav-num">A2</span>Хэрэглэгч — Хадгалуулах</div>
+  <div class="nav-item" data-target="a3"><span class="nav-num">A3</span>Хэрэглэгч — Буцаан авах</div>
+  <div class="nav-item" data-target="a4"><span class="nav-num">A4</span>Жолооч — QR удирдлага</div>
+
+  <div class="nav-group">Жолоочийн апп · Гар утас</div>
+  <div class="nav-item" data-target="b0"><span class="nav-num">B0</span>Жолоочийн нэвтрэлт</div>
+  <div class="nav-item" data-target="b1"><span class="nav-num">B1</span>Мэдэгдэл</div>
+  <div class="nav-item" data-target="b2"><span class="nav-num">B2</span>QR → Автомат онгойлт</div>
+  <div class="nav-item" data-target="b3"><span class="nav-num">B3</span>Газрын зураг</div>
+  <div class="nav-item" data-target="b4"><span class="nav-num">B4</span>Миний цуглуулалт</div>
+
+  <div class="sb-foot">
+    <b>SHOES LOVE</b> · 2022 Rebrand<br>
+    Хувилбар v1.0 · 10 дэлгэц<br>
+    Өнгө: Teal #00babe · Yellow #ffd400
+  </div>
+</aside>
+
+<!-- ============ MAIN ============ -->
+<main class="main">
+
+  <!-- ====== 00. COVER ====== -->
+  <section id="cover" class="screen active">
+    <div class="cover-hero">
+      <div class="grid-motif">
+        <i></i><i class="fill"><svg viewBox="0 0 24 24" fill="none"><path d="M2 15.5c0-1.2.9-2 2-2h2.2c1 0 1.9-.4 2.7-1l3.1-2.4c1.2-.9 2.8-.8 4 .2l2.4 2c.9.7 1.6 1 2.6 1.2 1 .2 1.8 1 1.8 2v1.3c0 1-.8 1.7-1.8 1.7H3.8C2.8 19.5 2 18.7 2 17.7v-2.2Z" fill="#fff"/></svg></i><i></i>
+        <i class="yel"></i><i></i><i class="fill"></i>
+        <i></i><i></i><i></i>
+      </div>
+      <div class="cover-eyebrow">ДИЗАЙНЫ БАРИМТ БИЧИГ · 2022 REBRAND</div>
+      <h1>Ухаалаг хадгалах <em>локерын</em> систем</h1>
+      <p>Хэрэглэгч гутлаа угаалга &amp; цэвэрлэгээнд өгөхөөр локерт хадгалуулах, бэлэн болсон гутлаа буцаан авах, хүргэлтийн жолооч QR уншуулан түгжээ онгойлгож эд зүйл цуглуулах — энэ бүх урсгалыг хамарсан дэлгэц бүрийн дизайн. Тайлбар бүрийг дэлгэцийн баруун талд бүтэн фрэймээр байрлуулав.</p>
+      <div class="cover-meta">
+        <div>Систем<b>2 систем</b></div>
+        <div>Нийт дэлгэц<b>10 дэлгэц</b></div>
+        <div>Хэл<b>Монгол</b></div>
+        <div>Брэнд<b>SHOES LOVE</b></div>
+      </div>
+    </div>
+
+    <div class="cover-cols">
+      <div class="sys-card">
+        <div class="corner"></div>
+        <div class="tag">СИСТЕМ A · КИОСК</div>
+        <h3>Смарт дэлгэц</h3>
+        <p>Локерын их биед суурилуулсан босоо хүрэлцэх дэлгэц. Сурталчилгаа тоглуулах, хэрэглэгч хадгалуулах/авах, жолоочийн QR түгжээ удирдлага.</p>
+        <div class="scr-links">
+          <span class="goto" data-target="a1">A1 Хүлээлт</span>
+          <span class="goto" data-target="a2">A2 Хадгалуулах</span>
+          <span class="goto" data-target="a3">A3 Авах</span>
+          <span class="goto" data-target="a4">A4 Жолооч</span>
+        </div>
+      </div>
+      <div class="sys-card b">
+        <div class="corner"></div>
+        <div class="tag">СИСТЕМ B · ГАР УТАС</div>
+        <h3>Жолоочийн апп</h3>
+        <p>Хүргэлтийн жолоочдод зориулсан апп. Шинэ хадгалалтын мэдэгдэл, QR-аар бүх түгжээ автоматаар онгойлгох, локерын байршлын газрын зураг.</p>
+        <div class="scr-links">
+          <span class="goto" data-target="b0">B0 Нэвтрэх</span>
+          <span class="goto" data-target="b1">B1 Мэдэгдэл</span>
+          <span class="goto" data-target="b2">B2 QR онгойлт</span>
+          <span class="goto" data-target="b3">B3 Газрын зураг</span>
+          <span class="goto" data-target="b4">B4 Түүх</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-row">
+      <div class="card">
+        <h4>ӨНГӨНИЙ БАГЦ — REBRANDING GUIDELINE</h4>
+        <div class="swatches">
+          <div class="sw"><div class="chipc" style="background:#00babe"></div><div class="info"><div class="nm">Teal</div><div class="hx">#00babe</div><div class="role">PRIMARY · 80%</div></div></div>
+          <div class="sw"><div class="chipc" style="background:#ffd400"></div><div class="info"><div class="nm">Yellow</div><div class="hx">#ffd400</div><div class="role">ACCENT · 20%</div></div></div>
+          <div class="sw"><div class="chipc" style="background:#e66558"></div><div class="info"><div class="nm">Coral</div><div class="hx">#e66558</div><div class="role">ALERT</div></div></div>
+          <div class="sw"><div class="chipc" style="background:#0a3537"></div><div class="info"><div class="nm">Deep ink</div><div class="hx">#0a3537</div><div class="role">UI BASE</div></div></div>
+          <div class="sw"><div class="chipc" style="background:#d8e1ce"></div><div class="info"><div class="nm">Sage</div><div class="hx">#d8e1ce</div><div class="role">SOFT</div></div></div>
+          <div class="sw"><div class="chipc" style="background:#eef9fe;border-bottom:1px solid #e6e7e8"></div><div class="info"><div class="nm">Sky</div><div class="hx">#eef9fe</div><div class="role">SURFACE</div></div></div>
+          <div class="sw"><div class="chipc" style="background:#77787b"></div><div class="info"><div class="nm">Gray 700</div><div class="hx">#77787b</div><div class="role">TEXT</div></div></div>
+          <div class="sw"><div class="chipc" style="background:#c6c8ca"></div><div class="info"><div class="nm">Gray 300</div><div class="hx">#c6c8ca</div><div class="role">LINE</div></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h4>ТИПОГРАФИ</h4>
+        <div class="type-row">
+          <div class="type-item">
+            <div class="tlabel">DISPLAY · LOGO — Montserrat 900 (≈ Swis721 Blk BT)</div>
+            <div class="tdisp">SHOES LOVE</div>
+          </div>
+          <div class="type-item">
+            <div class="tlabel">BODY — Inter (Кирилл дэмжинэ)</div>
+            <div class="tbody">Гуталаа хадгалуулаад QR уншуулна</div>
+          </div>
+          <div class="type-item">
+            <div class="tlabel">MONO · DATA — JetBrains Mono</div>
+            <div class="tmono">BOX-07 · 9911-2233 · 14:25</div>
+          </div>
+        </div>
+        <div class="legend-grid">
+          <span class="pill ok">Бэлэн</span>
+          <span class="pill wait">Хүлээгдэж буй</span>
+          <span class="pill done">Авсан</span>
+          <span class="pill coral">Анхаар</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== A1 · IDLE / AD ====== -->
+  <section id="a1" class="screen">
+    <div class="scr-head">
+      <div class="scr-meta">SCREEN A1 · КИОСК / ХҮЛЭЭЛТ</div>
+      <h1 class="scr-title">Сурталчилгаа / хүлээлтийн дэлгэц</h1>
+      <p class="scr-desc">Хэрэглэгч хүрэх хүртэл дэлгэц сурталчилгаа болон ашиглах зааврын видеог тасралтгүй давтан тоглуулна. Хүрэхэд үндсэн үйлдлийн товчнууд, баруун дээд буланд жолоочийн QR гарч ирнэ.</p>
+    </div>
+    <div class="spec">
+      <div class="stage">
+        <span class="stage-tag">◷ ХҮЛЭЭЛТ · 9:16 KIOSK</span>
+        <div class="kiosk"><div class="k-screen">
+          <div class="ad-video">
+            <video class="ad-vid" muted playsinline preload="auto"></video>
+            <div class="kiosk-loc">📍 СБД салбар <b>· Локер №12</b></div>
+            <div class="qr-badge ad-qr" data-open="driver" title="Жолоочийн нэвтрэлт"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3h7v7H3V3Zm2 2v3h3V5H5Zm9-2h7v7h-7V3Zm2 2v3h3V5h-3ZM3 14h7v7H3v-7Zm2 2v3h3v-3H5Zm11-2h2v2h-2v-2Zm3 0h2v2h-2v-2Zm-3 3h2v2h-2v-2Zm3 0h2v4h-4v-2h2v-2Z" fill="#fff"/></svg>ЖОЛООЧ</div>
+            <span class="float-note">↓ Хүрэхэд гарч ирэх товчнууд</span>
+            <div class="ad-fallback">
+              <div class="ad-shoe">
+                <svg viewBox="0 0 120 70" fill="none"><path d="M6 50c0-7 6-11 12-11h11c5 0 9-2 14-6l15-12c6-5 14-4 20 1l11 9c4 4 9 5 14 6 6 1 11 5 11 11v6c0 4-3 7-7 7H13c-4 0-7-3-7-7v-4Z" fill="#fff"/><path d="M44 33l5 10M60 26l6 11M76 22l6 12" stroke="#00babe" stroke-width="3.5" stroke-linecap="round"/><path d="M6 56h107" stroke="#ffd400" stroke-width="5" stroke-linecap="round"/></svg>
+              </div>
+              <div class="ad-word">SHOES <span>LOVE</span></div>
+              <div class="ad-tag">УГААЛГА · ХАДГАЛАЛТ</div>
+            </div>
+            <div class="ad-dots"><i class="on"></i><i></i><i></i><i></i></div>
+            <div class="ad-hint"><span class="tap"></span><br>Дэлгэцэнд хүрнэ үү</div>
+            <div class="ad-actions">
+              <button class="btn" data-target="a2"><span class="ico">📦</span>Хадгалуулах</button>
+              <button class="btn yellow" data-target="a3"><span class="ico">👟</span>Буцаан авах</button>
+            </div>
+          </div>
+          <div class="kmodal" hidden>
+            <div class="kmodal-card">
+              <button class="kmodal-x" data-close aria-label="Хаах">×</button>
+              <div class="kmodal-kicker">ЖОЛООЧИЙН НЭВТРЭЛТ</div>
+              <div class="auth-qr">
+                <svg viewBox="0 0 33 33" fill="#0a3537" shape-rendering="crispEdges"><path d="M0 0h7v7H0z M26 0h7v7h-7z M0 26h7v7H0z"/><rect x="1" y="1" width="5" height="5" fill="#fff"/><rect x="27" y="1" width="5" height="5" fill="#fff"/><rect x="1" y="27" width="5" height="5" fill="#fff"/><path d="M2 2h3v3H2z M28 2h3v3h-3z M2 28h3v3H2z"/><path d="M9 0h1v1H9z M11 0h1v1h-1z M14 0h1v3h-1z M17 1h1v1h-1z M20 0h1v1h-1z M23 1h1v1h-1z M9 8h1v1H9z M11 8h2v1h-2z M14 8h1v1h-1z M17 9h1v1h-1z M19 8h1v2h-1z M22 9h1v1h-1z M25 8h1v1h-1z M28 9h1v1h-1z M31 8h1v1h-1z M8 11h1v2H8z M12 11h1v1h-1z M15 12h2v1h-2z M18 11h1v1h-1z M21 12h1v1h-1z M24 11h1v2h-1z M27 12h1v1h-1z M30 11h1v1h-1z M9 15h1v1H9z M11 14h1v2h-1z M14 15h2v1h-2z M17 14h1v1h-1z M20 15h1v1h-1z M23 14h1v1h-1z M26 15h1v1h-1z M29 14h1v2h-1z M32 15h1v1h-1z M8 18h2v1H8z M11 18h1v1h-1z M14 18h1v2h-1z M17 19h1v1h-1z M20 18h2v1h-2z M24 18h1v1h-1z M27 19h1v1h-1z M30 18h1v1h-1z M9 21h1v2H9z M12 22h1v1h-1z M15 21h1v1h-1z M18 22h2v1h-2z M22 21h1v1h-1z M25 22h1v1h-1z M28 21h1v1h-1z M31 22h1v1h-1z M14 24h1v1h-1z M17 25h1v1h-1z M20 24h1v1h-1z M23 25h1v1h-1z M26 24h1v1h-1z M29 25h1v1h-1z M32 24h1v1h-1z M8 26h1v1H8z M8 29h1v1H8z M8 32h1v1H8z M11 27h1v1h-1z M14 28h2v1h-2z M17 27h1v2h-1z M20 28h1v1h-1z M23 27h1v1h-1z M26 28h2v1h-2z M30 27h1v2h-1z M32 29h1v1h-1z M11 30h1v2h-1z M14 31h1v1h-1z M18 30h1v1h-1z M21 31h2v1h-2z M25 30h1v1h-1z M28 31h1v1h-1z M31 30h1v2h-1z"/></svg>
+              </div>
+              <p class="auth-sub">Энэ QR-г <b>жолоочийн апп-аараа</b> уншуулна уу. Хадгалалтын <b>жагсаалт таны утсан дээр</b> нээгдэнэ.</p>
+              <div class="auth-wait"><span class="spin"></span>Уншуулахыг хүлээж байна…</div>
+              <button class="btn full demo-auth">▶ Демо: апп-аар уншуулсан</button>
+            </div>
+          </div>
+        </div></div>
+      </div>
+
+      <aside class="panel">
+        <div class="panel-head"><div><div class="pk">ТАЙЛБАР</div><h3>Сурталчилгаа / хүлээлтийн дэлгэц</h3></div><div class="pn">A1</div></div>
+        <div class="panel-body">
+          <div class="blk"><h4>ЗОРИЛГО</h4><p>Идэвхгүй үед дэлгэцийг сурталчилгаа болон хэрэглэх зааврын контентоор дүүргэж, брэндийг сурталчлах ба хэрэглэгчийг үйлдэл рүү уриалах.</p></div>
+          <div class="blk"><h4>ГОЛ УРСГАЛ</h4>
+            <ol class="flow">
+              <li>Систем серверээс <b>идэвхтэй видео жагсаалтыг</b> татна (сурталчилгаа + ашиглах заавар).</li>
+              <li>Видеонууд <b>бүртгэгдсэн дарааллаар</b> тасралтгүй давтагдан тоглоно.</li>
+              <li>Хэрэглэгч <b>дэлгэцэнд хүрэхэд</b> тоглуулалт зогсож, «Хадгалуулах» ба «Буцаан авах» товч гарч ирнэ.</li>
+              <li>Баруун дээд буланд <b>«ЖОЛООЧ» товч</b> байнга харагдана. Дарахад <b>QR попап</b> гарч ирнэ.</li>
+              <li>Жолооч уг QR-г <b>апп-аараа уншуулж нэвтэрснээр</b> л удирдлагын жагсаалт (A4) нээгдэнэ.</li>
+            </ol>
+          </div>
+          <div class="blk"><h4>ҮЙЛДЭЛ → ҮР ДҮН</h4>
+            <table class="ix">
+              <tr><td class="el">Дэлгэцэнд хүрэх</td><td class="ac">Видео зогсож үйлдлийн товч гарна</td></tr>
+              <tr><td class="el">Хадгалуулах</td><td class="ac"><span class="goto" data-target="a2">A2 руу</span></td></tr>
+              <tr><td class="el">Буцаан авах</td><td class="ac"><span class="goto" data-target="a3">A3 руу</span></td></tr>
+              <tr><td class="el">«ЖОЛООЧ» товч</td><td class="ac">QR попап нээгдэнэ → апп-аар уншуулж нэвтэрнэ</td></tr>
+              <tr><td class="el">Нэвтрэлт амжилттай</td><td class="ac"><span class="goto" data-target="a4">A4 руу</span> (хадгалалтын жагсаалт)</td></tr>
+              <tr><td class="el">30 сек идэвхгүй</td><td class="ac">Дахин хүлээлтийн видео руу буцна</td></tr>
+            </table>
+          </div>
+          <div class="blk"><h4>ӨГӨГДӨЛ · БҮРТГЭЛ</h4>
+            <ul class="data">
+              <li>Контент серверээс: <code>video_id</code>, <code>type</code> (ad/guide), <code>order</code>, <code>play_count</code></li>
+              <li>Дэлгэц нь суурилуулсан <b>салбар/локерын мэдээллийг</b> харуулна: <code>locker_id</code>, <code>branch</code> (ж: СБД салбар · Локер №12)</li>
+              <li>Идэвхгүй хугацааг хэмжиж автоматаар хүлээлт рүү буцаах <code>idle_timeout</code></li>
+            </ul>
+          </div>
+          <div class="pnote"><b>Анхаар:</b> Видео нь дуугүй (muted) автоплэйтэй. Сүлжээ тасрахад кэшлэгдсэн контентыг тоглуулна.</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ====== A2 · DROP OFF ====== -->
+  <section id="a2" class="screen">
+    <div class="scr-head">
+      <div class="scr-meta">SCREEN A2 · КИОСК / ХЭРЭГЛЭГЧ</div>
+      <h1 class="scr-title">Хэрэглэгч — Хадгалуулах</h1>
+      <p class="scr-desc">Хэрэглэгч утасны дугаараа оруулахад систем хоосон хайрцгийг санамсаргүйгээр хуваарилж онгойлгоно. Хэрэглэгч гуталаа хийгээд хаалгыг хаахад хадгалалт баталгаажна.</p>
+    </div>
+    <div class="spec">
+      <div class="stage">
+        <span class="stage-tag">📦 ХАДГАЛУУЛАХ</span>
+        <div class="kiosk"><div class="k-screen">
+          <div class="ui-top"><div class="ui-back">‹</div><div class="ttl">Хадгалуулах</div><div style="width:26px"></div></div>
+          <div class="ui-body">
+            <div class="a2-main">
+              <div class="ui-label">Утасны дугаараа оруулна уу</div>
+              <input class="ui-input" id="a2Phone" type="tel" inputmode="numeric" placeholder="9911-2233" autocomplete="off">
+              <div id="a2Result">
+                <div class="instr" id="a2Hint">Утсаа оруулаад <b>«＋ Нэмж хадгалах»</b> дарж хайрцаг аваарай 👟</div>
+                <div class="box-card" id="a2Box" hidden>
+                  <span class="open-tag">● ОНГОЙЛОО</span>
+                  <div class="lbl">ТАНД ХУВААРИЛАГДСАН ХАЙРЦАГ</div>
+                  <div class="no" id="a2BoxNo">07</div>
+                  <div class="sub">Гуталаа хийгээд хаалгыг хаана уу</div>
+                </div>
+                <div class="ui-label" id="a2ListLbl" style="margin-top:12px" hidden>Энэ удаад хадгалсан хайрцаг</div>
+                <div class="list" id="a2List"></div>
+              </div>
+              <div class="btn-row" style="margin-top:auto">
+                <button class="btn ghost" id="a2Add">＋ Нэмж хадгалах</button>
+                <button class="btn" id="a2Done">Дуусгах</button>
+              </div>
+            </div>
+            <div class="a2-success" hidden>
+              <div class="success" style="flex:1">
+                <div class="ring"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="big" id="a2SumCount">2 хайрцаг</div>
+                <h4>Амжилттай хадгаллаа</h4>
+                <p id="a2SumText">Хайрцаг №07, №14 · утас руу мэдэгдэл илгээв.</p>
+                <div class="countdown" id="a2Count">5 секундын дараа эхлэл рүү шилжинэ…</div>
+                <button class="btn full" id="a2Reset">Одоо эхлэл рүү</button>
+              </div>
+            </div>
+          </div>
+        </div></div>
+      </div>
+
+      <aside class="panel">
+        <div class="panel-head"><div><div class="pk">ТАЙЛБАР</div><h3>Хэрэглэгч — Хадгалуулах</h3></div><div class="pn">A2</div></div>
+        <div class="panel-body">
+          <div class="blk"><h4>ЗОРИЛГО</h4><p>Хэрэглэгч утасны дугаараараа гутлаа санамсаргүй хуваарилагдсан хайрцагт хадгалуулах. Утасны дугаар нь эзэмшлийн түлхүүр.</p></div>
+          <div class="blk"><h4>ГОЛ УРСГАЛ</h4>
+            <ol class="flow">
+              <li>Хэрэглэгч <b>утасны дугаараа</b> оруулна.</li>
+              <li>Систем <b>хоосон хайрцгийг санамсаргүйгээр</b> хуваарилж онгойлгоно (ж: Хайрцаг №07).</li>
+              <li>«Гуталаа хийгээд хаалгыг хаана уу» гэсэн <b>заавар</b> харагдана.</li>
+              <li>Хаалга хаагдмагц хадгалалт баталгаажиж, <b>дугаар руу мэдэгдэл</b> илгээнэ.</li>
+              <li>Шаардвал <b>нэмэлт хайрцаг</b> нээж болно.</li>
+            </ol>
+          </div>
+          <div class="blk"><h4>ҮЙЛДЭЛ → ҮР ДҮН</h4>
+            <table class="ix">
+              <tr><td class="el">Утас + Үргэлжлүүлэх</td><td class="ac">Хоосон хайрцаг хуваарилж онгойлгоно</td></tr>
+              <tr><td class="el">Хаалга хаагдах</td><td class="ac"><code>status = stored</code> болж баталгаажна</td></tr>
+              <tr><td class="el">Нэмж хадгалах</td><td class="ac">Шинэ хайрцаг хуваарилна (нэг дугаарт олон хайрцаг)</td></tr>
+              <tr><td class="el">Дуусгах / Болих</td><td class="ac"><span class="goto" data-target="a1">A1 руу</span></td></tr>
+            </table>
+          </div>
+          <div class="blk"><h4>ӨГӨГДӨЛ · БҮРТГЭЛ</h4>
+            <ul class="data">
+              <li>Хадгалалт: <code>locker_id</code>, <code>box_no</code>, <code>phone</code>, <code>deposit_time</code>, <code>status=stored</code></li>
+              <li>Жолоочийн апп руу <b>«шинэ хадгалалт» мэдэгдэл</b> илгээнэ → <span class="goto" data-target="b1">B1</span></li>
+            </ul>
+          </div>
+          <div class="pnote"><b>Анхаар:</b> Утасны дугаар нь эзэмшлийн түлхүүр. Нэг дугаарт олон хайрцаг холбогдож болно.</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ====== A3 · PICK UP ====== -->
+  <section id="a3" class="screen">
+    <div class="scr-head">
+      <div class="scr-meta">SCREEN A3 · КИОСК / ХЭРЭГЛЭГЧ</div>
+      <h1 class="scr-title">Хэрэглэгч — Буцаан авах</h1>
+      <p class="scr-desc">Хэрэглэгч утасны дугаараа оруулаад «Хайрцаг нээх» дарна. Жагсаалт харуулахгүйгээр <b>бэлэн болсон хайрцаг(ууд) шууд онгойж</b>, «№__ хайрцаг онгойлоо» гэсэн баталгаа гарна. <b>5 секундын дараа автоматаар</b> эхлэл (хүлээлт) дэлгэц рүү буцна.</p>
+    </div>
+    <div class="spec">
+      <div class="stage">
+        <span class="stage-tag">👟 БУЦААН АВАХ</span>
+        <div class="kiosk"><div class="k-screen">
+          <div class="ui-top"><div class="ui-back">‹</div><div class="ttl">Буцаан авах</div><div style="width:26px"></div></div>
+          <div class="ui-body">
+            <div class="a3-main">
+              <div class="ui-label">Утасны дугаараа оруулна уу</div>
+              <input class="ui-input" id="a3Phone" type="tel" inputmode="numeric" placeholder="9911-2233" autocomplete="off">
+              <div class="instr" id="a3Hint">Бүртгэлтэй утсаа оруулаад <b>«Хайрцаг нээх»</b> дарна уу 👟</div>
+              <button class="btn full" id="a3Open" style="margin-top:auto">Хайрцаг нээх</button>
+            </div>
+            <div class="a3-success" hidden>
+              <div class="success" style="flex:1">
+                <div class="ring"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="big" id="a3SumNos">№03, №09</div>
+                <h4>Хайрцаг онгойлоо</h4>
+                <p id="a3SumText">Дугаар №03, №09 хайрцаг онгойлоо. Гуталаа аваад хаалгыг хаагаарай.</p>
+                <div class="countdown" id="a3Count">5 секундын дараа эхлэл рүү шилжинэ…</div>
+                <button class="btn full" id="a3Reset">Одоо эхлэл рүү</button>
+              </div>
+            </div>
+          </div>
+        </div></div>
+      </div>
+
+      <aside class="panel">
+        <div class="panel-head"><div><div class="pk">ТАЙЛБАР</div><h3>Хэрэглэгч — Буцаан авах</h3></div><div class="pn">A3</div></div>
+        <div class="panel-body">
+          <div class="blk"><h4>ЗОРИЛГО</h4><p>Хэрэглэгч утасны дугаараараа бэлэн болсон гутлаа буцаан авах. Зөвхөн «бэлэн» төлөвтэй хайрцаг нээгдэнэ.</p></div>
+          <div class="blk"><h4>ГОЛ УРСГАЛ</h4>
+            <ol class="flow">
+              <li>Хэрэглэгч <b>утасны дугаараа</b> оруулна (бичих боломжтой).</li>
+              <li>«Хайрцаг нээх» дарахад тухайн дугаарт холбогдсон <b>бэлэн хайрцаг(ууд) шууд онгойно</b> — жагсаалт харуулахгүй.</li>
+              <li><b>«№__, №__ хайрцаг онгойлоо»</b> гэсэн баталгаа гарна.</li>
+              <li>Хэрэглэгч гуталаа авч хаалгыг хаахад <code>status = picked_up</code> болно.</li>
+              <li><b>5 секундын дараа</b> автоматаар эхлэл (хүлээлт) дэлгэц рүү буцна.</li>
+            </ol>
+          </div>
+          <div class="blk"><h4>ҮЙЛДЭЛ → ҮР ДҮН</h4>
+            <table class="ix">
+              <tr><td class="el">Утас бичих</td><td class="ac">Гараас оруулна (демо: жинхэнэ input)</td></tr>
+              <tr><td class="el">Хайрцаг нээх</td><td class="ac">Бэлэн хайрцаг шууд онгойж баталгаа гарна</td></tr>
+              <tr><td class="el">Богино дугаар</td><td class="ac">«Бүрэн оруулна уу» сэрэмжлүүлэг</td></tr>
+              <tr><td class="el">5 сек / Одоо</td><td class="ac"><span class="goto" data-target="a1">A1 руу</span> автоматаар буцна</td></tr>
+            </table>
+          </div>
+          <div class="blk"><h4>ӨГӨГДӨЛ · БҮРТГЭЛ</h4>
+            <ul class="data">
+              <li>Авалт: <code>box_no</code>, <code>phone</code>, <code>pickup_time</code>, <code>status=picked_up</code></li>
+            </ul>
+          </div>
+          <div class="pnote"><b>Анхаар:</b> Зөвхөн <b>«бэлэн»</b> төлөвтэй хайрцаг онгойно. Угаалга дуусаагүй бол «хүлээгдэж буй» гэж мэдэгдэнэ. Баталгааны дараа 5 сек дотор эхлэл рүү буцна.</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ====== A4 · DRIVER QR CONTROL ====== -->
+  <section id="a4" class="screen">
+    <div class="scr-head">
+      <div class="scr-meta">SCREEN A4 · КИОСК / ЖОЛООЧ</div>
+      <h1 class="scr-title">Жолооч — Киоск QR (Жолоочийн горим)</h1>
+      <p class="scr-desc">Киоск нь жолоочид <b>зөвхөн QR-г харуулна</b> — хадгалалтын жагсаалтыг киоск дээр гаргахгүй. Жолооч энэ QR-г <b>гар утасныхаа апп-аар уншуулахад бүх боодлын жагсаалт нь утсан дээр нь</b> нээгдэнэ (<span class="goto" data-target="b2">B2</span>). Ингэснээр нэг киоскыг олон жолооч дараалалд оролгүй ашиглаж, нээлт бүр тухайн жолоочийн нэрээр бүртгэгдэнэ.</p>
+    </div>
+    <div class="spec">
+      <div class="stage">
+        <span class="stage-tag">🔑 ЖОЛООЧИЙН ГОРИМ</span>
+        <div class="kiosk"><div class="k-screen">
+          <div class="ui-top"><div class="ui-back">‹</div><div class="ttl">Жолоочийн горим</div><div style="width:26px"></div></div>
+          <div class="a4-qr">
+            <div class="kmodal-kicker">QR УНШУУЛНА УУ</div>
+            <div class="auth-qr">
+              <svg viewBox="0 0 33 33" fill="#0a3537" shape-rendering="crispEdges"><path d="M0 0h7v7H0z M26 0h7v7h-7z M0 26h7v7H0z"/><rect x="1" y="1" width="5" height="5" fill="#fff"/><rect x="27" y="1" width="5" height="5" fill="#fff"/><rect x="1" y="27" width="5" height="5" fill="#fff"/><path d="M2 2h3v3H2z M28 2h3v3h-3z M2 28h3v3H2z"/><path d="M9 0h1v1H9z M11 0h1v1h-1z M14 0h1v3h-1z M17 1h1v1h-1z M20 0h1v1h-1z M23 1h1v1h-1z M9 8h1v1H9z M11 8h2v1h-2z M14 8h1v1h-1z M17 9h1v1h-1z M19 8h1v2h-1z M22 9h1v1h-1z M25 8h1v1h-1z M28 9h1v1h-1z M31 8h1v1h-1z M8 11h1v2H8z M12 11h1v1h-1z M15 12h2v1h-2z M18 11h1v1h-1z M21 12h1v1h-1z M24 11h1v2h-1z M27 12h1v1h-1z M30 11h1v1h-1z M9 15h1v1H9z M11 14h1v2h-1z M14 15h2v1h-2z M17 14h1v1h-1z M20 15h1v1h-1z M23 14h1v1h-1z M26 15h1v1h-1z M29 14h1v2h-1z M32 15h1v1h-1z M8 18h2v1H8z M11 18h1v1h-1z M14 18h1v2h-1z M17 19h1v1h-1z M20 18h2v1h-2z M24 18h1v1h-1z M27 19h1v1h-1z M30 18h1v1h-1z M9 21h1v2H9z M12 22h1v1h-1z M15 21h1v1h-1z M18 22h2v1h-2z M22 21h1v1h-1z M25 22h1v1h-1z M28 21h1v1h-1z M31 22h1v1h-1z M14 24h1v1h-1z M17 25h1v1h-1z M20 24h1v1h-1z M23 25h1v1h-1z M26 24h1v1h-1z M29 25h1v1h-1z M32 24h1v1h-1z M8 26h1v1H8z M8 29h1v1H8z M8 32h1v1H8z M11 27h1v1h-1z M14 28h2v1h-2z M17 27h1v2h-1z M20 28h1v1h-1z M23 27h1v1h-1z M26 28h2v1h-2z M30 27h1v2h-1z M32 29h1v1h-1z M11 30h1v2h-1z M14 31h1v1h-1z M18 30h1v1h-1z M21 31h2v1h-2z M25 30h1v1h-1z M28 31h1v1h-1z M31 30h1v2h-1z"/></svg>
+            </div>
+            <h4 class="a4-qr-ttl">Жолоочийн апп-аар уншуулна уу</h4>
+            <p class="a4-qr-sub">Хадгалалтын <b>жагсаалт таны утсан дээр</b> нээгдэнэ.</p>
+            <div class="instr">📱 Апп → «QR авах» → энэ кодыг уншуулна</div>
+          </div>
+        </div></div>
+      </div>
+
+      <aside class="panel">
+        <div class="panel-head"><div><div class="pk">ТАЙЛБАР</div><h3>Жолооч — Киоск QR</h3></div><div class="pn">A4</div></div>
+        <div class="panel-body">
+          <div class="blk"><h4>ЗОРИЛГО</h4><p>Киоскыг жолоочийн <b>нэвтрэх QR</b>-аар хязгаарлах. Жагсаалт ба удирдлага бүхэлдээ <b>жолоочийн гар утсанд</b> шилжсэн тул киоск зөвхөн кодыг харуулна.</p></div>
+          <div class="blk"><h4>ГОЛ УРСГАЛ</h4>
+            <ol class="flow">
+              <li>Жолооч хүлээлтийн дэлгэцийн <b>«ЖОЛООЧ» товчоор</b> (<span class="goto" data-target="a1">A1</span>) эсвэл энэ дэлгэцээр QR-г харна.</li>
+              <li>QR-г <b>гар утасныхаа апп-аар уншина</b> (<span class="goto" data-target="b2">B2</span>) — сервер жолоочийг баталгаажуулна.</li>
+              <li>Тухайн локер дахь <b>хадгалагдсан боодлын жагсаалт утсан дээр нээгдэнэ</b> — хайрцгийн дугаар, эзэн, эд зүйл.</li>
+              <li>Жолооч утаснаасаа <b>бүгдийг / сонгосныг нээж</b> эд зүйлсээ цуглуулна.</li>
+            </ol>
+          </div>
+          <div class="blk"><h4>ҮЙЛДЭЛ → ҮР ДҮН</h4>
+            <table class="ix">
+              <tr><td class="el">‹ Буцах</td><td class="ac"><span class="goto" data-target="a1">A1 руу</span></td></tr>
+              <tr><td class="el">QR уншуулах (апп)</td><td class="ac">Жагсаалт <b>утсан дээр</b> нээгдэнэ → <span class="goto" data-target="b2">B2</span></td></tr>
+            </table>
+          </div>
+          <div class="blk"><h4>ӨГӨГДӨЛ · БҮРТГЭЛ</h4>
+            <ul class="data">
+              <li>Киоск дээр: <code>locker_id</code>, динамик нэвтрэх <code>qr_token</code></li>
+              <li>Нээлт нь утсан дээр (<span class="goto" data-target="b2">B2</span>) — <code>opened_by = driver_name</code></li>
+            </ul>
+          </div>
+          <div class="pnote"><b>Анхаар:</b> Хадгалалтын жагсаалт киоск дээр <b>огт харагдахгүй</b> — зөвхөн жолоочийн утсан дээр. Ингэснээр нэг киоскыг олон жолооч зэрэг ашиглах боломжтой.</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+
+  <!-- ====== B0 · DRIVER LOGIN ====== -->
+  <section id="b0" class="screen">
+    <div class="scr-head">
+      <div class="scr-meta">SCREEN B0 · АПП / ЖОЛООЧ</div>
+      <h1 class="scr-title">Жолоочийн апп — Нэвтрэх</h1>
+      <p class="scr-desc">Апп нээгдэхэд хамгийн түрүүнд гарах дэлгэц. Зөвхөн бүртгэлтэй хүргэлтийн жолооч утасны дугаар + нууц үгээрээ нэвтэрнэ. Нэвтрэлт нь бүх QR онгойлт, цуглуулалтыг тухайн жолоочийн нэртэй холбоно.</p>
+    </div>
+    <div class="spec">
+      <div class="stage">
+        <span class="stage-tag">🔐 НЭВТРЭХ</span>
+        <div class="phone"><div class="notch"></div><div class="p-screen">
+          <div class="statusbar"><span>9:41</span><span class="dots"><i></i><i></i><i></i></span></div>
+          <div class="login">
+            <div class="login-brand">
+              <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M2 15.5c0-1.2.9-2 2-2h2.2c1 0 1.9-.4 2.7-1l3.1-2.4c1.2-.9 2.8-.8 4 .2l2.4 2c.9.7 1.6 1 2.6 1.2 1 .2 1.8 1 1.8 2v1.3c0 1-.8 1.7-1.8 1.7H3.8C2.8 19.5 2 18.7 2 17.7v-2.2Z" fill="#fff"/><circle cx="8.5" cy="9.5" r="2.4" fill="#ffd400"/></svg></div>
+              <div class="login-word">SHOES <span>LOVE</span></div>
+              <div class="login-role">ЖОЛООЧИЙН АПП</div>
+            </div>
+            <div class="login-form">
+              <div class="ui-label">Утасны дугаар</div>
+              <div class="ui-input">9911-2233<span class="caret"></span></div>
+              <div class="ui-label">Нууц үг</div>
+              <div class="ui-input login-pw">••••••••</div>
+              <button class="btn full" data-target="b1" style="margin-top:10px">Нэвтрэх</button>
+              <div class="login-links"><span>SMS кодоор нэвтрэх</span><span>Нууц үг мартсан?</span></div>
+            </div>
+            <div class="login-foot">Зөвхөн бүртгэлтэй хүргэлтийн жолооч нэвтэрнэ.<br>Асуудал гарвал диспетчертэй холбогдоно уу.</div>
+          </div>
+        </div></div>
+      </div>
+
+      <aside class="panel">
+        <div class="panel-head"><div><div class="pk">ТАЙЛБАР</div><h3>Жолоочийн апп — Нэвтрэх</h3></div><div class="pn">B0</div></div>
+        <div class="panel-body">
+          <div class="blk"><h4>ЗОРИЛГО</h4><p>Зөвхөн бүртгэлтэй жолооч апп-д нэвтэрч ажиллах. Нэвтрэлт нь бүх үйлдлийг (QR онгойлт, цуглуулалт) жолоочийн нэртэй холбож, хариуцлагыг баталгаажуулна.</p></div>
+          <div class="blk"><h4>ГОЛ УРСГАЛ</h4>
+            <ol class="flow">
+              <li>Жолооч <b>утасны дугаар + нууц үгээ</b> оруулна.</li>
+              <li>(Сонголт) <b>SMS кодоор</b> нэвтрэх боломжтой.</li>
+              <li>Сервер баталгаажуулж <b>сесс үүсгэнэ</b> → үндсэн дэлгэц (<span class="goto" data-target="b1">B1</span>).</li>
+              <li>Нэвтэрсэн <b>жолоочийн нэр</b> бүх QR онгойлт, цуглуулалтын бүртгэлд хадгалагдана.</li>
+            </ol>
+          </div>
+          <div class="blk"><h4>ҮЙЛДЭЛ → ҮР ДҮН</h4>
+            <table class="ix">
+              <tr><td class="el">Нэвтрэх</td><td class="ac"><span class="goto" data-target="b1">B1 руу</span> (үндсэн дэлгэц)</td></tr>
+              <tr><td class="el">SMS кодоор</td><td class="ac">Нэг удаагийн код оруулах горим</td></tr>
+              <tr><td class="el">Нууц үг мартсан</td><td class="ac">Сэргээх урсгал</td></tr>
+            </table>
+          </div>
+          <div class="blk"><h4>ӨГӨГДӨЛ · БҮРТГЭЛ</h4>
+            <ul class="data">
+              <li>Жолооч: <code>driver_id</code>, <code>name</code>, <code>phone</code>, <code>password_hash</code></li>
+              <li>Сесс: <code>session_token</code>, <code>logged_in_at</code></li>
+            </ul>
+          </div>
+          <div class="pnote"><b>Анхаар:</b> QR түгжээ онгойлт (<span class="goto" data-target="b2">B2</span> · <span class="goto" data-target="a4">A4</span>) бүгд энэ нэвтэрсэн жолоочийн нэрээр бүртгэгдэнэ. Сесс дуусахад дахин нэвтэрнэ.</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ====== B1 · NOTIFICATIONS ====== -->
+  <section id="b1" class="screen">
+    <div class="scr-head">
+      <div class="scr-meta">SCREEN B1 · АПП / ЖОЛООЧ</div>
+      <h1 class="scr-title">Жолоочийн апп — Мэдэгдэл</h1>
+      <p class="scr-desc">Локерт шинэ эд зүйл хадгалагдах бүрт жолоочийн апп руу мэдэгдэл ирнэ. Мэдэгдэлд локерын байршил, хайрцгийн дугаар, цаг харагдана.</p>
+    </div>
+    <div class="spec">
+      <div class="stage">
+        <span class="stage-tag">🔔 МЭДЭГДЭЛ</span>
+        <div class="phone"><div class="notch"></div><div class="p-screen">
+          <div class="statusbar"><span>9:41</span><span class="dots"><i></i><i></i><i></i></span></div>
+          <div class="ui-top"><div class="ttl">Мэдэгдэл</div><span class="pill coral">3 шинэ</span></div>
+          <div class="ui-body" style="gap:10px">
+            <div class="noti new"><span class="ndot"></span><div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M4 8h16v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8Z" stroke="currentColor" stroke-width="1.6"/><path d="M4 8l2-4h12l2 4M9 12h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><div><div class="nt">Шинэ хадгалалт · СБД салбар</div><div class="nm">Хайрцаг №11 — цуглуулахад бэлэн</div><div class="ntime">14:22 · 1 мин өмнө</div></div></div>
+            <div class="noti new"><span class="ndot"></span><div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M4 8h16v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8Z" stroke="currentColor" stroke-width="1.6"/><path d="M4 8l2-4h12l2 4M9 12h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><div><div class="nt">Шинэ хадгалалт · СБД салбар</div><div class="nm">Хайрцаг №07 — цуглуулахад бэлэн</div><div class="ntime">14:10 · 13 мин өмнө</div></div></div>
+            <div class="noti"><div class="ic"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v3l2 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><div><div class="nt">Сануулга · Хан-Уул салбар</div><div class="nm">2 хайрцаг 1 цаг хүлээгдэж байна</div><div class="ntime">13:05</div></div></div>
+          </div>
+          <div class="tabbar">
+            <div class="tab active" data-target="b1"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 19a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8"/></svg><span>Мэдэгдэл</span></div>
+            <div class="tab" data-target="b3"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg><span>Байршил</span></div>
+            <div class="tab qr" data-target="b2"><span class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3h7v7H3V3Zm2 2v3h3V5H5Zm9-2h7v7h-7V3Zm2 2v3h3V5h-3ZM3 14h7v7H3v-7Zm2 2v3h3v-3H5Zm11-2h2v2h-2v-2Zm3 0h2v2h-2v-2Zm-3 3h2v2h-2v-2Zm3 0h2v4h-4v-2h2v-2Z" fill="currentColor"/></svg></span><span>QR авах</span></div>
+            <div class="tab" data-target="b4"><svg viewBox="0 0 24 24" fill="none"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Жагсаалт</span></div>
+          </div>
+        </div></div>
+      </div>
+
+      <aside class="panel">
+        <div class="panel-head"><div><div class="pk">ТАЙЛБАР</div><h3>Жолоочийн апп — Мэдэгдэл</h3></div><div class="pn">B1</div></div>
+        <div class="panel-body">
+          <div class="blk"><h4>ЗОРИЛГО</h4><p>Шинэ хадгалалт болон цуглуулах шаардлагатай эд зүйлийг жолоочид шуурхай мэдэгдэх. Цуглуулалтын дараалал, замчлалд хөтлөх.</p></div>
+          <div class="blk"><h4>ГОЛ УРСГАЛ</h4>
+            <ol class="flow">
+              <li>Хэрэглэгч хадгалуулмагц (<span class="goto" data-target="a2">A2</span>) жолоочид <b>push мэдэгдэл</b> ирнэ.</li>
+              <li>Мэдэгдэлд <b>локерын байршил, хайрцгийн дугаар, цаг</b> харагдана.</li>
+              <li>Дарахад тухайн <b>локерын дэлгэрэнгүй / газрын зураг</b> руу шилжинэ.</li>
+            </ol>
+          </div>
+          <div class="blk"><h4>ҮЙЛДЭЛ → ҮР ДҮН</h4>
+            <table class="ix">
+              <tr><td class="el">Мэдэгдэл дарах</td><td class="ac">Локерын байршил / зураг → <span class="goto" data-target="b3">B3</span></td></tr>
+              <tr><td class="el">Газрын зураг</td><td class="ac"><span class="goto" data-target="b3">B3 руу</span></td></tr>
+            </table>
+          </div>
+          <div class="blk"><h4>ӨГӨГДӨЛ · БҮРТГЭЛ</h4>
+            <ul class="data">
+              <li>Мэдэгдэл: <code>locker_id</code>, <code>box_no</code>, <code>created_at</code>, <code>read</code></li>
+            </ul>
+          </div>
+          <div class="pnote"><b>Анхаар:</b> Мэдэгдэл нь push болон апп доторх жагсаалт хэлбэрээр хадгалагдана. Удаан хүлээгдсэн хайрцгийг сануулгаар ялгаж харуулна.</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ====== B2 · QR AUTO OPEN ====== -->
+  <section id="b2" class="screen">
+    <div class="scr-head">
+      <div class="scr-meta">SCREEN B2 · АПП / ЖОЛООЧ</div>
+      <h1 class="scr-title">QR уншуулах → Автомат онгойлт</h1>
+      <p class="scr-desc">Жолооч локер дээрх QR-г уншуулахад тухайн локерын бүх хадгалагдсан хайрцаг автоматаар онгойж, нээлт нь жолоочийн нэрээр DB-д бүртгэгдэнэ.</p>
+    </div>
+    <div class="spec">
+      <div class="stage">
+        <span class="stage-tag">⛶ QR СКАННЕР</span>
+        <div class="phone"><div class="notch"></div><div class="p-screen">
+          <div class="b2-scan">
+            <div class="statusbar" style="color:#fff"><span>9:41</span><span class="dots"><i style="background:#fff"></i><i style="background:#fff"></i><i style="background:#fff"></i></span></div>
+            <div class="scanner">
+              <div class="scan-box">
+                <span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span>
+                <svg class="scan-qr" viewBox="0 0 24 24" fill="none" style="position:absolute;top:37px;left:37px"><path d="M3 3h7v7H3V3Zm2 2v3h3V5H5Zm9-2h7v7h-7V3Zm2 2v3h3V5h-3ZM3 14h7v7H3v-7Zm2 2v3h3v-3H5Zm11-2h2v2h-2v-2Zm3 0h2v2h-2v-2Zm-3 3h2v2h-2v-2Zm3 0h2v4h-4v-2h2v-2Z" fill="#fff"/></svg>
+                <div class="scan-line"></div>
+              </div>
+              <div class="scan-hint">Локер дээрх QR-г хүрээнд оруулна уу</div>
+            </div>
+            <div style="padding:12px 16px;background:#072a2c"><button class="btn full" id="b2Scan">▶ Демо: QR уншуулсан</button></div>
+          </div>
+          <div class="b2-list" hidden>
+            <div class="statusbar"><span>9:41</span><span class="dots"><i></i><i></i><i></i></span></div>
+            <div class="ui-top"><div class="driver-chip"><div class="av">Б</div><div><div class="dn">Бат-Эрдэнэ</div><div class="dr">СБД салбар · ID-204</div></div></div><span class="pill ok">✓ Уншуулсан</span></div>
+            <div class="ui-body" style="gap:9px">
+              <div class="ui-label">Энэ локер дахь хадгалалт · <span id="b2Cnt">4</span> хайрцаг</div>
+              <div class="list" id="b2Boxes"></div>
+              <div class="btn-row" style="margin-top:auto">
+                <button class="btn ghost sm" id="b2Again">＋ Дахин уншуулах</button>
+                <button class="btn" id="b2OpenAll">Бүгдийг нээх</button>
+              </div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div class="tab" data-target="b1"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 19a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8"/></svg><span>Мэдэгдэл</span></div>
+            <div class="tab" data-target="b3"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg><span>Байршил</span></div>
+            <div class="tab qr active" data-target="b2"><span class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3h7v7H3V3Zm2 2v3h3V5H5Zm9-2h7v7h-7V3Zm2 2v3h3V5h-3ZM3 14h7v7H3v-7Zm2 2v3h3v-3H5Zm11-2h2v2h-2v-2Zm3 0h2v2h-2v-2Zm-3 3h2v2h-2v-2Zm3 0h2v4h-4v-2h2v-2Z" fill="currentColor"/></svg></span><span>QR авах</span></div>
+            <div class="tab" data-target="b4"><svg viewBox="0 0 24 24" fill="none"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Жагсаалт</span></div>
+          </div>
+        </div></div>
+      </div>
+
+      <aside class="panel">
+        <div class="panel-head"><div><div class="pk">ТАЙЛБАР</div><h3>QR → Автомат онгойлт</h3></div><div class="pn">B2</div></div>
+        <div class="panel-body">
+          <div class="blk"><h4>ЗОРИЛГО</h4><p>Жолооч локер дээрх QR-г уншуулахад тухайн локерын <b>хадгалагдсан боодлын жагсаалт утсан дээр нь</b> гарч ирнэ — аль хайрцагт хэний ямар эд зүйл байгаа нь дугаараар харагдана. Жолооч утаснаасаа нээж цуглуулна.</p></div>
+          <div class="blk"><h4>ГОЛ УРСГАЛ</h4>
+            <ol class="flow">
+              <li>Апп-ны <b>сканнерыг нээж</b> локер (эсвэл <span class="goto" data-target="a4">A4</span>) дээрх QR-г уншина.</li>
+              <li>Систем локерыг таньж, жолоочийг баталгаажуулна.</li>
+              <li>Утсан дээр <b>хайрцаг бүрийн жагсаалт</b> гарна: <b>хайрцгийн дугаар · эзний утас · эд зүйл (гутал) · хадгалсан цаг</b>.</li>
+              <li>«Бүгдийг нээх» эсвэл хайрцаг сонгож нээгээд эд зүйлсээ цуглуулна.</li>
+              <li>Дараагийн локерт <b>«＋ Дахин уншуулах»</b> дарж нэмж скан хийнэ.</li>
+            </ol>
+          </div>
+          <div class="blk"><h4>ҮЙЛДЭЛ → ҮР ДҮН</h4>
+            <table class="ix">
+              <tr><td class="el">QR уншуулах</td><td class="ac">Утсан дээр хайрцгийн жагсаалт гарна</td></tr>
+              <tr><td class="el">Бүгдийг нээх</td><td class="ac">Бүх хайрцаг онгойж, төлөв «Онгойлоо» болно</td></tr>
+              <tr><td class="el">＋ Дахин уншуулах</td><td class="ac">Сканнер руу буцаж нэмж скан хийнэ</td></tr>
+              <tr><td class="el">Доод таб</td><td class="ac">Мэдэгдэл · Байршил · QR · Жагсаалт хооронд шилжих</td></tr>
+            </table>
+          </div>
+          <div class="blk"><h4>ӨГӨГДӨЛ · БҮРТГЭЛ</h4>
+            <ul class="data">
+              <li>Хайрцаг бүр: <code>box_no</code> → <code>phone</code>, <code>item</code>, <code>deposit_time</code></li>
+              <li>Нээлт: <code>opened_by = driver_name</code>, <code>opened_at</code>, <code>box[]</code></li>
+            </ul>
+          </div>
+          <div class="pnote"><b>Анхаар:</b> Хадгалалтын жагсаалт киоскод бус <b>жолоочийн утсан дээр</b> гарна. Нээлт DB-д <b>заавал жолоочийн нэрээр</b> бүртгэгдэнэ; сүлжээгүй үед дараалалд хийж дараа синк хийнэ.</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ====== B3 · MAP ====== -->
+  <section id="b3" class="screen">
+    <div class="scr-head">
+      <div class="scr-meta">SCREEN B3 · АПП / ЖОЛООЧ</div>
+      <h1 class="scr-title">Газрын зураг — Локерын байршил</h1>
+      <p class="scr-desc">Суурилуулсан байршил бүрээр локерын байршлыг газрын зураг дээр пин-ээр харуулна. Хүлээгдэж буй цуглуулалттай локерыг өнгөөр ялгана.</p>
+    </div>
+    <div class="spec">
+      <div class="stage">
+        <span class="stage-tag">🗺 ГАЗРЫН ЗУРАГ</span>
+        <div class="phone"><div class="notch"></div><div class="p-screen">
+          <div class="statusbar"><span>9:41</span><span class="dots"><i></i><i></i><i></i></span></div>
+          <div class="ui-top"><div class="ttl">Локерын байршил</div><span class="pill ok">6 цэг</span></div>
+          <div class="map">
+            <!-- scenery -->
+            <div class="river" style="top:-12%;left:6%;width:30px;height:130%;transform:rotate(22deg)"></div>
+            <div class="park" style="top:26%;left:68%;width:26%;height:19%"></div>
+            <div class="block" style="top:13%;left:10%;width:16%;height:9%"></div>
+            <div class="block" style="top:15%;left:33%;width:13%;height:12%"></div>
+            <div class="block" style="top:31%;left:18%;width:14%;height:10%"></div>
+            <div class="block" style="top:44%;left:52%;width:15%;height:9%"></div>
+            <div class="block" style="top:30%;left:44%;width:10%;height:8%"></div>
+            <div class="block" style="top:47%;left:14%;width:12%;height:7%"></div>
+            <!-- roads -->
+            <div class="road" style="left:0;right:0;top:28%;height:9px"></div>
+            <div class="road" style="left:0;right:0;top:56%;height:11px"></div>
+            <div class="road" style="top:0;bottom:0;left:38%;width:9px"></div>
+            <div class="road" style="top:0;bottom:0;left:66%;width:7px"></div>
+            <!-- route to nearest urgent locker -->
+            <svg class="map-route" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M44 40 L38 33 L24 26" fill="none" stroke="#00babe" stroke-width="2.6" stroke-dasharray="5 4" vector-effect="non-scaling-stroke" stroke-linecap="round"/></svg>
+            <!-- you are here -->
+            <div class="here" style="left:44%;top:40%"></div>
+            <!-- pins -->
+            <div class="pin alert" style="left:24%;top:26%"><span class="cnt">2</span><div class="dot"></div><span class="lbl">СБД салбар</span></div>
+            <div class="pin" style="left:56%;top:20%"><div class="dot"></div><span class="lbl">Сансар</span></div>
+            <div class="pin alert" style="left:40%;top:46%"><span class="cnt">1</span><div class="dot"></div><span class="lbl">Их Наран</span></div>
+            <div class="pin" style="left:72%;top:34%"><div class="dot"></div><span class="lbl">Зайсан</span></div>
+            <div class="pin" style="left:24%;top:50%"><div class="dot"></div><span class="lbl">Баянгол</span></div>
+            <div class="pin alert" style="left:60%;top:52%"><span class="cnt">3</span><div class="dot"></div><span class="lbl">Драгон</span></div>
+            <!-- overlays -->
+            <div class="map-search"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M16 16l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Локер эсвэл салбар хайх…</div>
+            <div class="map-filter"><span class="chip on">Бүгд</span><span class="chip">Яаралтай</span><span class="chip">Ойролцоо</span></div>
+            <div class="map-zoom"><button>＋</button><button>−</button></div>
+            <div class="map-gps"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+            <!-- bottom sheet (compact, horizontal) -->
+            <div class="sheet">
+              <div class="grab"></div>
+              <div class="sheet-head"><span class="st">Цуглуулах локерууд</span><span class="sv">Ойролцоо · 3</span></div>
+              <div class="hscroll">
+                <div class="loc-card"><div class="lc-top"><div class="lc-no alert">2</div><div><div class="lc-name">СБД салбар</div><div class="lc-dist">0.8 км</div></div></div><div class="lc-meta">Чингэлтэй · 09:00–22:00</div><button class="btn sm">Замчлал</button></div>
+                <div class="loc-card"><div class="lc-top"><div class="lc-no alert">3</div><div><div class="lc-name">Драгон төв</div><div class="lc-dist">1.6 км</div></div></div><div class="lc-meta">Баянгол · 10:00–21:00</div><button class="btn sm">Замчлал</button></div>
+                <div class="loc-card"><div class="lc-top"><div class="lc-no">0</div><div><div class="lc-name">Зайсан салбар</div><div class="lc-dist">2.3 км</div></div></div><div class="lc-meta">Хан-Уул · цуглуулалтгүй</div><button class="btn sm ghost">Замчлал</button></div>
+              </div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div class="tab" data-target="b1"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 19a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8"/></svg><span>Мэдэгдэл</span></div>
+            <div class="tab active" data-target="b3"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg><span>Байршил</span></div>
+            <div class="tab qr" data-target="b2"><span class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3h7v7H3V3Zm2 2v3h3V5H5Zm9-2h7v7h-7V3Zm2 2v3h3V5h-3ZM3 14h7v7H3v-7Zm2 2v3h3v-3H5Zm11-2h2v2h-2v-2Zm3 0h2v2h-2v-2Zm-3 3h2v2h-2v-2Zm3 0h2v4h-4v-2h2v-2Z" fill="currentColor"/></svg></span><span>QR авах</span></div>
+            <div class="tab" data-target="b4"><svg viewBox="0 0 24 24" fill="none"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Жагсаалт</span></div>
+          </div>
+        </div></div>
+      </div>
+
+      <aside class="panel">
+        <div class="panel-head"><div><div class="pk">ТАЙЛБАР</div><h3>Газрын зураг — Байршил</h3></div><div class="pn">B3</div></div>
+        <div class="panel-body">
+          <div class="blk"><h4>ЗОРИЛГО</h4><p>Жолоочид локеруудын байршил, цуглуулах шаардлагатай цэгүүдийг газрын зураг дээр харуулж, маршрутаа төлөвлөхөд туслах.</p></div>
+          <div class="blk"><h4>ГОЛ УРСГАЛ</h4>
+            <ol class="flow">
+              <li>Газрын зураг дээр локеруудыг <b>пин-ээр</b>, жолоочийн байршлыг <b>«та энд байна»</b> цэгээр харуулна.</li>
+              <li>Дээд <b>хайлт</b> ба шүүлтүүр (Бүгд / Яаралтай / Ойролцоо), хажуу талд <b>+/− зум, GPS</b> товч.</li>
+              <li>Пин дарахад <b>нэр, хаяг, зай (км), ажиллах цаг, хүлээгдэж буй тоо</b> бүхий карт нээгдэнэ.</li>
+              <li>Хамгийн ойрын яаралтай локер хүртэлх <b>санал болгох маршрут</b> зураас дээр харагдана.</li>
+              <li>«Замчлал» дарахад гадаад <b>навигацийн апп</b> нээгдэнэ.</li>
+            </ol>
+          </div>
+          <div class="blk"><h4>ҮЙЛДЭЛ → ҮР ДҮН</h4>
+            <table class="ix">
+              <tr><td class="el">Пин дарах</td><td class="ac">Локерын карт (нэр, хаяг, тоо)</td></tr>
+              <tr><td class="el">Жагсаалт ⇄ зураг</td><td class="ac">Харагдах хэлбэр солих</td></tr>
+              <tr><td class="el">Замчлал</td><td class="ac">Гадаад навигаци нээх</td></tr>
+            </table>
+          </div>
+          <div class="blk"><h4>ӨГӨГДӨЛ · БҮРТГЭЛ</h4>
+            <ul class="data">
+              <li>Локер: <code>location</code>, <code>address</code>, <code>lat</code>, <code>lng</code>, <code>hours</code>, <code>pending_count</code></li>
+              <li>Жолоочийн байршлаас тооцсон <code>distance_km</code>, эрэмбэлэлт</li>
+            </ul>
+          </div>
+          <div class="pnote"><b>Анхаар:</b> Хүлээгдэж буй цуглуулалттай локерыг <b>коралл</b> өнгөөр ялган, тоог пин дээр харуулна. Жагсаалт нь зайгаар эрэмбэлэгдэнэ.</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ====== B4 · HISTORY ====== -->
+  <section id="b4" class="screen">
+    <div class="scr-head">
+      <div class="scr-meta">SCREEN B4 · АПП / ЖОЛООЧ</div>
+      <h1 class="scr-title">Миний цуглуулалтын түүх</h1>
+      <p class="scr-desc">Жолоочийн нэрээр бүртгэгдсэн бүх нээлт, цуглуулалтын түүх. Хариуцлага, тооцоо нэгтгэлд ашиглагдана.</p>
+    </div>
+    <div class="spec">
+      <div class="stage">
+        <span class="stage-tag">🧾 ТҮҮХ</span>
+        <div class="phone"><div class="notch"></div><div class="p-screen">
+          <div class="statusbar"><span>9:41</span><span class="dots"><i></i><i></i><i></i></span></div>
+          <div class="ui-top"><div class="driver-chip"><div class="av">Б</div><div><div class="dn">Бат-Эрдэнэ</div><div class="dr">Өнөөдөр · 14 хайрцаг</div></div></div></div>
+          <div class="ui-body" style="gap:10px">
+            <div class="filter-row"><span class="chip on">Өнөөдөр</span><span class="chip">7 хоног</span><span class="chip">Сар</span></div>
+            <div class="list">
+              <div class="row-item"><div class="rno">4</div><div class="rinfo"><div class="rphone">СБД салбар</div><div class="rmeta">QR онгойлт · 4 хайрцаг</div></div><div class="rmeta" style="font-family:var(--mono)">14:24</div></div>
+              <div class="row-item"><div class="rno">3</div><div class="rinfo"><div class="rphone">Хан-Уул салбар</div><div class="rmeta">QR онгойлт · 3 хайрцаг</div></div><div class="rmeta" style="font-family:var(--mono)">12:10</div></div>
+              <div class="row-item"><div class="rno">7</div><div class="rinfo"><div class="rphone">Баянгол салбар</div><div class="rmeta">QR онгойлт · 7 хайрцаг</div></div><div class="rmeta" style="font-family:var(--mono)">09:45</div></div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div class="tab" data-target="b1"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 19a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8"/></svg><span>Мэдэгдэл</span></div>
+            <div class="tab" data-target="b3"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg><span>Байршил</span></div>
+            <div class="tab qr" data-target="b2"><span class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3h7v7H3V3Zm2 2v3h3V5H5Zm9-2h7v7h-7V3Zm2 2v3h3V5h-3ZM3 14h7v7H3v-7Zm2 2v3h3v-3H5Zm11-2h2v2h-2v-2Zm3 0h2v2h-2v-2Zm-3 3h2v2h-2v-2Zm3 0h2v4h-4v-2h2v-2Z" fill="currentColor"/></svg></span><span>QR авах</span></div>
+            <div class="tab active" data-target="b4"><svg viewBox="0 0 24 24" fill="none"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Жагсаалт</span></div>
+          </div>
+        </div></div>
+      </div>
+
+      <aside class="panel">
+        <div class="panel-head"><div><div class="pk">ТАЙЛБАР</div><h3>Миний цуглуулалтын түүх</h3></div><div class="pn">B4</div></div>
+        <div class="panel-body">
+          <div class="blk"><h4>ЗОРИЛГО</h4><p>Жолоочийн нэрээр бүртгэгдсэн бүх нээлт, цуглуулалтын түүхийг хугацаагаар нэгтгэн харуулах. Тооцоо, хариуцлагын баримт.</p></div>
+          <div class="blk"><h4>ГОЛ УРСГАЛ</h4>
+            <ol class="flow">
+              <li>Цуглуулалтыг <b>огноо / салбар / хайрцгийн тоогоор</b> жагсаана.</li>
+              <li>Хугацааны <b>шүүлтүүр</b> (Өнөөдөр / 7 хоног / Сар).</li>
+              <li>Мөр дарахад <b>тухайн нээлтийн дэлгэрэнгүй</b>.</li>
+            </ol>
+          </div>
+          <div class="blk"><h4>ӨГӨГДӨЛ · БҮРТГЭЛ</h4>
+            <ul class="data">
+              <li>Бүх бичлэг: <code>opened_by = driver_name</code>, <code>locker</code>, <code>box_count</code>, <code>opened_at</code></li>
+            </ul>
+          </div>
+          <div class="pnote"><b>Анхаар:</b> Бүх бүртгэл жолоочийн нэртэй холбогдсон тул хариуцлага, цалин/тооцоо нэгтгэлд шууд ашиглагдана.</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  /* ======================================================================
+     A1 광고 / 사용방법 영상 재생목록
+     ----------------------------------------------------------------------
+     아래 배열에 영상 파일 경로나 URL을 "순서대로" 넣으면 무한 반복 재생됩니다.
+     · 로컬: index.html 옆에 videos/ 폴더를 만들고 mp4를 넣은 뒤 경로 추가
+     · 원격: 'https://.../sample.mp4' 처럼 URL 그대로 추가
+     비워두면(현재 상태) SHOES LOVE 브랜드 화면이 표시됩니다.
+     ====================================================================== */
+  const AD_PLAYLIST = [
+    // 'videos/ad1.mp4',      // 예: 광고 영상
+    // 'videos/guide1.mp4',   // 예: 사용방법 영상
+    // 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', // 즉시 테스트용 샘플
+  ];
+
+  const screens = document.querySelectorAll('.screen');
+  const items   = document.querySelectorAll('.nav-item');
+  const kmodal  = document.querySelector('#a1 .kmodal');
+  /* ‹ 뒤로가기에서 히스토리가 비었을 때의 기본 이전 화면 */
+  const BACK_FALLBACK = { a2:'a1', a3:'a1', a4:'a1' };
+  let navHist = [];
+
+  function activeId(){ const s=document.querySelector('.screen.active'); return s?s.id:null; }
+  function closeDriver(){ if(kmodal) kmodal.hidden=true; }
+  function show(id, opts){
+    opts = opts || {};
+    if(typeof clearAuto==='function') clearAuto();
+    const cur = activeId();
+    if(cur && cur!==id && !opts.back) navHist.push(cur);   /* 앞으로 이동 시에만 기록 */
+    closeDriver();
+    screens.forEach(s=>s.classList.toggle('active', s.id===id));
+    items.forEach(n=>n.classList.toggle('active', n.dataset.target===id));
+    window.scrollTo({top:0,behavior:'smooth'});
+    if(id==='a1') resumeAd();
+    if(id==='a2') resetA2();
+    if(id==='a3') resetA3();
+    if(id==='b2') resetB2();
+  }
+  /* ---- 5 секундын автомат буцалт (A2/A3 баталгааны дараа) ---- */
+  let autoTO=null, autoIV=null;
+  function clearAuto(){ if(autoTO){clearTimeout(autoTO);autoTO=null;} if(autoIV){clearInterval(autoIV);autoIV=null;} }
+  function autoReturn(labelEl){
+    clearAuto();
+    let s=5;
+    const tick=()=>{ if(labelEl) labelEl.textContent = s>0 ? (s+' секундын дараа эхлэл рүү шилжинэ…') : 'Шилжиж байна…'; };
+    tick();
+    autoIV=setInterval(()=>{ s--; tick(); if(s<=0) clearInterval(autoIV); },1000);
+    autoTO=setTimeout(()=>{ clearAuto(); show('a1'); },5000);
+  }
+  function goBack(){
+    let prev = navHist.pop();
+    if(!prev){ const c=activeId(); prev = c ? BACK_FALLBACK[c] : null; }
+    if(prev) show(prev, {back:true});
+  }
+
+  /* 클릭 위임: 뒤로(‹) · 기사 QR 팝업 열기/닫기 · 데모 인증 · data-target 이동 */
+  document.addEventListener('click', e=>{
+    if(e.target.closest('.ui-back')){ goBack(); return; }
+    if(e.target.closest('[data-open="driver"]')){ if(kmodal) kmodal.hidden=false; return; }
+    if(e.target.closest('.demo-auth')){ show('b2'); b2ShowList(); return; }  /* 앱이 QR 스캔 → 리스트는 폰(B2)에 */
+    if(e.target.closest('[data-close]') || e.target===kmodal){ closeDriver(); return; }
+    const el = e.target.closest('[data-target]');
+    if(el && el.dataset.target){ show(el.dataset.target); }
+  });
+
+  /* ---- A1 광고 플레이어 (순차 무한재생 + 폴백) ---- */
+  const adVid  = document.querySelector('#a1 .ad-vid');
+  const adDots = document.querySelectorAll('#a1 .ad-dots i');
+  let adIdx = 0, adFails = 0;
+  function setDots(i){ if(adDots.length) adDots.forEach((d,n)=>d.classList.toggle('on', n===i%adDots.length)); }
+  function playAd(i){
+    if(!adVid || !AD_PLAYLIST.length) return;
+    adVid.src = AD_PLAYLIST[i];
+    adVid.muted = true;
+    setDots(i);
+    const p = adVid.play();
+    if(p && p.catch) p.catch(()=>{});
+  }
+  function resumeAd(){ if(adVid && AD_PLAYLIST.length){ const p=adVid.play(); if(p&&p.catch) p.catch(()=>{}); } }
+
+  /* ---- A2 хадгалуулах (бичих · нэмэх · дуусгах) ---- */
+  const a2Phone   = document.getElementById('a2Phone');
+  const a2Hint    = document.getElementById('a2Hint');
+  const a2Box     = document.getElementById('a2Box');
+  const a2BoxNo   = document.getElementById('a2BoxNo');
+  const a2List    = document.getElementById('a2List');
+  const a2ListLbl = document.getElementById('a2ListLbl');
+  let a2Boxes = [];
+  const pad2 = n => String(n).padStart(2,'0');
+  function renderA2(){
+    const has = a2Boxes.length>0;
+    if(a2Hint)    a2Hint.hidden = has;
+    if(a2Box)     a2Box.hidden = !has;
+    if(a2ListLbl) a2ListLbl.hidden = !has;
+    if(has && a2BoxNo) a2BoxNo.textContent = pad2(a2Boxes[a2Boxes.length-1]);
+    if(a2List) a2List.innerHTML = !has ? '' : a2Boxes.map(n=>
+      `<div class="row-item"><div class="rno">${pad2(n)}</div><div class="rinfo"><div class="rphone">Хайрцаг №${pad2(n)}</div><div class="rmeta">Онгойлоо · гуталаа хийнэ үү</div></div><span class="pill ok">Нээлттэй</span></div>`
+    ).join('');
+  }
+  function a2AddBox(){
+    const digits = (a2Phone.value||'').replace(/\D/g,'');
+    if(digits.length < 6){
+      if(a2Hint){ a2Hint.hidden=false; a2Hint.innerHTML='Утасны дугаараа бүрэн оруулна уу 📱'; }
+      a2Box && (a2Box.hidden=true); a2ListLbl && (a2ListLbl.hidden=true); a2List && (a2List.innerHTML='');
+      a2Phone.classList.add('a2-shake'); setTimeout(()=>a2Phone.classList.remove('a2-shake'),350); a2Phone.focus(); return;
+    }
+    const used=new Set(a2Boxes), free=[];
+    for(let i=1;i<=24;i++) if(!used.has(i)) free.push(i);
+    if(!free.length) return;                     /* бүх хайрцаг дүүрсэн */
+    a2Boxes.push(free[Math.floor(Math.random()*free.length)]);
+    renderA2();
+  }
+  function a2DoneBox(){
+    if(!a2Boxes.length){ show('a1'); return; }   /* юу ч хадгалаагүй бол болих */
+    const phone = a2Phone.value || '9911-2233';
+    const sc=document.getElementById('a2SumCount'), st=document.getElementById('a2SumText');
+    if(sc) sc.textContent = a2Boxes.length+' хайрцаг';
+    if(st) st.textContent = 'Хайрцаг '+a2Boxes.map(n=>'№'+pad2(n)).join(', ')+' · '+phone+' руу мэдэгдэл илгээв.';
+    const m=document.querySelector('#a2 .a2-main'), s=document.querySelector('#a2 .a2-success');
+    if(m) m.hidden=true; if(s) s.hidden=false;
+    autoReturn(document.getElementById('a2Count'));    /* 5초 뒤 자동 시작화면 */
+  }
+  function resetA2(){
+    a2Boxes=[];
+    if(a2Phone) a2Phone.value='';
+    if(a2Hint)  a2Hint.innerHTML='Утсаа оруулаад <b>«＋ Нэмж хадгалах»</b> дарж хайрцаг аваарай 👟';
+    renderA2();
+    const m=document.querySelector('#a2 .a2-main'), s=document.querySelector('#a2 .a2-success');
+    if(m) m.hidden=false; if(s) s.hidden=true;
+  }
+  document.getElementById('a2Add')   && document.getElementById('a2Add').addEventListener('click', a2AddBox);
+  document.getElementById('a2Done')  && document.getElementById('a2Done').addEventListener('click', a2DoneBox);
+  document.getElementById('a2Reset') && document.getElementById('a2Reset').addEventListener('click', ()=>{ clearAuto(); resetA2(); show('a1'); });
+
+  /* ---- A3 буцаан авах (бичих · нээх · 5 сек автомат буцалт) ---- */
+  const a3Phone = document.getElementById('a3Phone');
+  const a3Hint  = document.getElementById('a3Hint');
+  function a3OpenBox(){
+    const digits=(a3Phone.value||'').replace(/\D/g,'');
+    if(digits.length<6){
+      if(a3Hint) a3Hint.innerHTML='Утасны дугаараа бүрэн оруулна уу 📱';
+      a3Phone.classList.add('a2-shake'); setTimeout(()=>a3Phone.classList.remove('a2-shake'),350); a3Phone.focus(); return;
+    }
+    const pool=[2,3,5,7,9,11,14];
+    const count=1+Math.floor(Math.random()*2), copy=[...pool], picked=[];
+    for(let i=0;i<count && copy.length;i++) picked.push(copy.splice(Math.floor(Math.random()*copy.length),1)[0]);
+    picked.sort((a,b)=>a-b);
+    const nos=picked.map(n=>'№'+pad2(n)).join(', ');
+    const ns=document.getElementById('a3SumNos'), st=document.getElementById('a3SumText');
+    if(ns) ns.textContent=nos;
+    if(st) st.textContent='Дугаар '+nos+' хайрцаг онгойлоо. Гуталаа аваад хаалгыг хаагаарай.';
+    const m=document.querySelector('#a3 .a3-main'), s=document.querySelector('#a3 .a3-success');
+    if(m) m.hidden=true; if(s) s.hidden=false;
+    autoReturn(document.getElementById('a3Count'));    /* 5초 뒤 자동 시작화면 */
+  }
+  function resetA3(){
+    if(a3Phone) a3Phone.value='';
+    if(a3Hint)  a3Hint.innerHTML='Бүртгэлтэй утсаа оруулаад <b>«Хайрцаг нээх»</b> дарна уу 👟';
+    const m=document.querySelector('#a3 .a3-main'), s=document.querySelector('#a3 .a3-success');
+    if(m) m.hidden=false; if(s) s.hidden=true;
+  }
+  document.getElementById('a3Open')  && document.getElementById('a3Open').addEventListener('click', a3OpenBox);
+  document.getElementById('a3Reset') && document.getElementById('a3Reset').addEventListener('click', ()=>{ clearAuto(); resetA3(); show('a1'); });
+
+  /* ---- B2 QR скан → утсан дээрх боодлын жагсаалт ---- */
+  const B2_DATA=[
+    {no:2,  phone:'9911-2233', item:'Гутал',    time:'13:40'},
+    {no:5,  phone:'8800-1122', item:'Гутал',    time:'13:55'},
+    {no:7,  phone:'9090-4567', item:'Гутал ×2', time:'14:10'},
+    {no:11, phone:'9594-7788', item:'Гутал',    time:'14:22'}
+  ];
+  function renderB2(opened){
+    const el=document.getElementById('b2Boxes'); if(!el) return;
+    el.innerHTML = B2_DATA.map(b=>
+      `<div class="row-item"><div class="rno">${pad2(b.no)}</div><div class="rinfo"><div class="rphone">Хайрцаг №${pad2(b.no)} · ${b.item}</div><div class="rmeta">${b.phone} · хадгалсан ${b.time}</div></div><span class="pill ${opened?'done':'ok'}">${opened?'Онгойлоо':'Бэлэн'}</span></div>`
+    ).join('');
+    const cnt=document.getElementById('b2Cnt'); if(cnt) cnt.textContent=B2_DATA.length;
+    const oa=document.getElementById('b2OpenAll'); if(oa) oa.textContent = opened?'Бүгд онгойлоо ✓':'Бүгдийг нээх';
+  }
+  function b2ShowList(){ const sc=document.querySelector('#b2 .b2-scan'), ls=document.querySelector('#b2 .b2-list'); if(sc)sc.hidden=true; if(ls)ls.hidden=false; renderB2(false); }
+  function resetB2(){ const sc=document.querySelector('#b2 .b2-scan'), ls=document.querySelector('#b2 .b2-list'); if(sc)sc.hidden=false; if(ls)ls.hidden=true; }
+  document.getElementById('b2Scan')    && document.getElementById('b2Scan').addEventListener('click', b2ShowList);
+  document.getElementById('b2Again')   && document.getElementById('b2Again').addEventListener('click', resetB2);
+  document.getElementById('b2OpenAll') && document.getElementById('b2OpenAll').addEventListener('click', ()=>renderB2(true));
+  if(adVid && AD_PLAYLIST.length){
+    adVid.addEventListener('playing', ()=>adVid.classList.add('on'));
+    adVid.addEventListener('ended',  ()=>{ adIdx=(adIdx+1)%AD_PLAYLIST.length; adFails=0; playAd(adIdx); });
+    adVid.addEventListener('error',  ()=>{
+      adFails++;
+      if(adFails>=AD_PLAYLIST.length){ adVid.classList.remove('on'); return; } /* 모두 실패 → 브랜드 화면 */
+      adIdx=(adIdx+1)%AD_PLAYLIST.length; playAd(adIdx);
+    });
+    playAd(0);
+  }
+</script>
+</body>
+</html>
