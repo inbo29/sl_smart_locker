@@ -335,13 +335,12 @@
   .countdown{font-family:var(--mono);font-size:11px;color:var(--text-mute)}
 
   /* driver app bottom tab bar */
-  .tabbar{display:flex;align-items:flex-end;border-top:1px solid var(--gray-200);background:#fff;padding:8px 6px 11px;gap:2px}
-  .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9px;line-height:1.1;color:var(--text-mute);cursor:pointer;font-weight:600;text-align:center}
-  .tab svg{width:21px;height:21px}
-  .tab.active{color:var(--teal-deep)}
-  .tab.qr{color:var(--teal-deep)}
-  .tab.qr .ic{width:38px;height:38px;border-radius:13px;background:var(--teal);display:flex;align-items:center;justify-content:center;margin-top:-9px;margin-bottom:2px;box-shadow:0 7px 16px -6px rgba(0,186,190,.95);color:#fff}
-  .tab.qr .ic svg{width:20px;height:20px}
+  .tabbar{display:flex;border-top:1px solid var(--gray-200);background:#fff;padding:6px 4px 10px}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;line-height:1.1;color:var(--text-mute);cursor:pointer;font-weight:600;text-align:center;position:relative;padding-top:8px;transition:color .15s}
+  .tab svg{width:22px;height:22px}
+  .tab:hover{color:var(--teal-deep)}
+  .tab.active{color:var(--teal-deep);font-weight:700}
+  .tab.active::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:3px;border-radius:0 0 3px 3px;background:var(--teal)}
 
   /* B3 compact horizontal location cards */
   .sheet .hscroll{display:flex;gap:9px;overflow-x:auto;padding-bottom:3px}
@@ -362,6 +361,19 @@
   /* B2 scan / list states */
   .b2-scan{flex:1;display:flex;flex-direction:column;min-height:0;background:#072a2c}
   .b2-list{flex:1;display:flex;flex-direction:column;min-height:0;background:#fff}
+  .b4-main,.b4-detail{flex:1;display:flex;flex-direction:column;min-height:0}
+  .b4-row{cursor:pointer;transition:border-color .15s}
+  .b4-row:hover{border-color:var(--teal)}
+  .b4-chev{font-family:var(--mono);color:var(--teal-deep);font-size:15px;margin-left:2px}
+  .login-err{font-size:11px;color:var(--coral);text-align:center;margin-top:6px;font-weight:600}
+  /* B3 interactive map */
+  .map-scene{position:absolute;inset:0;transform-origin:50% 44%;transition:transform .25s ease}
+  .map-filter .chip{cursor:pointer;user-select:none}
+  .map.urgent-only .pin:not(.alert){opacity:0;pointer-events:none}
+  .map .pin .dot{cursor:pointer}
+  .map .pin.selected{z-index:5}
+  .map .pin.selected .dot{box-shadow:0 0 0 4px rgba(255,212,0,.65),0 6px 12px -4px rgba(0,0,0,.45)}
+  .map .pin.selected .lbl{background:var(--ink);color:#fff}
 
   /* ============ EXPLANATION PANEL (right, full frame) ============ */
   .panel{
@@ -895,10 +907,11 @@
             </div>
             <div class="login-form">
               <div class="ui-label">Утасны дугаар</div>
-              <div class="ui-input">9911-2233<span class="caret"></span></div>
+              <input class="ui-input" id="b0Phone" type="tel" inputmode="numeric" placeholder="9911-2233" autocomplete="off">
               <div class="ui-label">Нууц үг</div>
-              <div class="ui-input login-pw">••••••••</div>
-              <button class="btn full" data-target="b1" style="margin-top:10px">Нэвтрэх</button>
+              <input class="ui-input login-pw" id="b0Pw" type="password" placeholder="••••••••" autocomplete="off">
+              <div class="login-err" id="b0Err" hidden>Утас, нууц үгээ зөв оруулна уу</div>
+              <button class="btn full" id="b0Login" style="margin-top:10px">Нэвтрэх</button>
               <div class="login-links"><span>SMS кодоор нэвтрэх</span><span>Нууц үг мартсан?</span></div>
             </div>
             <div class="login-foot">Зөвхөн бүртгэлтэй хүргэлтийн жолооч нэвтэрнэ.<br>Асуудал гарвал диспетчертэй холбогдоно уу.</div>
@@ -958,7 +971,7 @@
           <div class="tabbar">
             <div class="tab active" data-target="b1"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 19a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8"/></svg><span>Мэдэгдэл</span></div>
             <div class="tab" data-target="b3"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg><span>Байршил</span></div>
-            <div class="tab qr" data-target="b2"><span class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3h7v7H3V3Zm2 2v3h3V5H5Zm9-2h7v7h-7V3Zm2 2v3h3V5h-3ZM3 14h7v7H3v-7Zm2 2v3h3v-3H5Zm11-2h2v2h-2v-2Zm3 0h2v2h-2v-2Zm-3 3h2v2h-2v-2Zm3 0h2v4h-4v-2h2v-2Z" fill="currentColor"/></svg></span><span>QR авах</span></div>
+            <div class="tab qr" data-target="b2"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3h7v7H3V3Zm2 2v3h3V5H5Zm9-2h7v7h-7V3Zm2 2v3h3V5h-3ZM3 14h7v7H3v-7Zm2 2v3h3v-3H5Zm11-2h2v2h-2v-2Zm3 0h2v2h-2v-2Zm-3 3h2v2h-2v-2Zm3 0h2v4h-4v-2h2v-2Z" fill="currentColor"/></svg><span>QR авах</span></div>
             <div class="tab" data-target="b4"><svg viewBox="0 0 24 24" fill="none"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Жагсаалт</span></div>
           </div>
         </div></div>
@@ -1030,7 +1043,7 @@
           <div class="tabbar">
             <div class="tab" data-target="b1"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 19a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8"/></svg><span>Мэдэгдэл</span></div>
             <div class="tab" data-target="b3"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg><span>Байршил</span></div>
-            <div class="tab qr active" data-target="b2"><span class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3h7v7H3V3Zm2 2v3h3V5H5Zm9-2h7v7h-7V3Zm2 2v3h3V5h-3ZM3 14h7v7H3v-7Zm2 2v3h3v-3H5Zm11-2h2v2h-2v-2Zm3 0h2v2h-2v-2Zm-3 3h2v2h-2v-2Zm3 0h2v4h-4v-2h2v-2Z" fill="currentColor"/></svg></span><span>QR авах</span></div>
+            <div class="tab qr active" data-target="b2"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3h7v7H3V3Zm2 2v3h3V5H5Zm9-2h7v7h-7V3Zm2 2v3h3V5h-3ZM3 14h7v7H3v-7Zm2 2v3h3v-3H5Zm11-2h2v2h-2v-2Zm3 0h2v2h-2v-2Zm-3 3h2v2h-2v-2Zm3 0h2v4h-4v-2h2v-2Z" fill="currentColor"/></svg><span>QR авах</span></div>
             <div class="tab" data-target="b4"><svg viewBox="0 0 24 24" fill="none"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Жагсаалт</span></div>
           </div>
         </div></div>
@@ -1083,36 +1096,38 @@
           <div class="statusbar"><span>9:41</span><span class="dots"><i></i><i></i><i></i></span></div>
           <div class="ui-top"><div class="ttl">Локерын байршил</div><span class="pill ok">6 цэг</span></div>
           <div class="map">
-            <!-- scenery -->
-            <div class="river" style="top:-12%;left:6%;width:30px;height:130%;transform:rotate(22deg)"></div>
-            <div class="park" style="top:26%;left:68%;width:26%;height:19%"></div>
-            <div class="block" style="top:13%;left:10%;width:16%;height:9%"></div>
-            <div class="block" style="top:15%;left:33%;width:13%;height:12%"></div>
-            <div class="block" style="top:31%;left:18%;width:14%;height:10%"></div>
-            <div class="block" style="top:44%;left:52%;width:15%;height:9%"></div>
-            <div class="block" style="top:30%;left:44%;width:10%;height:8%"></div>
-            <div class="block" style="top:47%;left:14%;width:12%;height:7%"></div>
-            <!-- roads -->
-            <div class="road" style="left:0;right:0;top:28%;height:9px"></div>
-            <div class="road" style="left:0;right:0;top:56%;height:11px"></div>
-            <div class="road" style="top:0;bottom:0;left:38%;width:9px"></div>
-            <div class="road" style="top:0;bottom:0;left:66%;width:7px"></div>
-            <!-- route to nearest urgent locker -->
-            <svg class="map-route" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M44 40 L38 33 L24 26" fill="none" stroke="#00babe" stroke-width="2.6" stroke-dasharray="5 4" vector-effect="non-scaling-stroke" stroke-linecap="round"/></svg>
-            <!-- you are here -->
-            <div class="here" style="left:44%;top:40%"></div>
-            <!-- pins -->
-            <div class="pin alert" style="left:24%;top:26%"><span class="cnt">2</span><div class="dot"></div><span class="lbl">СБД салбар</span></div>
-            <div class="pin" style="left:56%;top:20%"><div class="dot"></div><span class="lbl">Сансар</span></div>
-            <div class="pin alert" style="left:40%;top:46%"><span class="cnt">1</span><div class="dot"></div><span class="lbl">Их Наран</span></div>
-            <div class="pin" style="left:72%;top:34%"><div class="dot"></div><span class="lbl">Зайсан</span></div>
-            <div class="pin" style="left:24%;top:50%"><div class="dot"></div><span class="lbl">Баянгол</span></div>
-            <div class="pin alert" style="left:60%;top:52%"><span class="cnt">3</span><div class="dot"></div><span class="lbl">Драгон</span></div>
+            <div class="map-scene" id="mapScene">
+              <!-- scenery -->
+              <div class="river" style="top:-12%;left:6%;width:30px;height:130%;transform:rotate(22deg)"></div>
+              <div class="park" style="top:26%;left:68%;width:26%;height:19%"></div>
+              <div class="block" style="top:13%;left:10%;width:16%;height:9%"></div>
+              <div class="block" style="top:15%;left:33%;width:13%;height:12%"></div>
+              <div class="block" style="top:31%;left:18%;width:14%;height:10%"></div>
+              <div class="block" style="top:44%;left:52%;width:15%;height:9%"></div>
+              <div class="block" style="top:30%;left:44%;width:10%;height:8%"></div>
+              <div class="block" style="top:47%;left:14%;width:12%;height:7%"></div>
+              <!-- roads -->
+              <div class="road" style="left:0;right:0;top:28%;height:9px"></div>
+              <div class="road" style="left:0;right:0;top:56%;height:11px"></div>
+              <div class="road" style="top:0;bottom:0;left:38%;width:9px"></div>
+              <div class="road" style="top:0;bottom:0;left:66%;width:7px"></div>
+              <!-- route to nearest urgent locker -->
+              <svg class="map-route" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M44 40 L38 33 L24 26" fill="none" stroke="#00babe" stroke-width="2.6" stroke-dasharray="5 4" vector-effect="non-scaling-stroke" stroke-linecap="round"/></svg>
+              <!-- you are here -->
+              <div class="here" style="left:44%;top:40%"></div>
+              <!-- pins -->
+              <div class="pin alert" style="left:24%;top:26%"><span class="cnt">2</span><div class="dot"></div><span class="lbl">СБД салбар</span></div>
+              <div class="pin" style="left:56%;top:20%"><div class="dot"></div><span class="lbl">Сансар</span></div>
+              <div class="pin alert" style="left:40%;top:46%"><span class="cnt">1</span><div class="dot"></div><span class="lbl">Их Наран</span></div>
+              <div class="pin" style="left:72%;top:34%"><div class="dot"></div><span class="lbl">Зайсан</span></div>
+              <div class="pin" style="left:24%;top:50%"><div class="dot"></div><span class="lbl">Баянгол</span></div>
+              <div class="pin alert" style="left:60%;top:52%"><span class="cnt">3</span><div class="dot"></div><span class="lbl">Драгон</span></div>
+            </div>
             <!-- overlays -->
             <div class="map-search"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M16 16l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Локер эсвэл салбар хайх…</div>
-            <div class="map-filter"><span class="chip on">Бүгд</span><span class="chip">Яаралтай</span><span class="chip">Ойролцоо</span></div>
-            <div class="map-zoom"><button>＋</button><button>−</button></div>
-            <div class="map-gps"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+            <div class="map-filter"><span class="chip on" data-filter="all">Бүгд</span><span class="chip" data-filter="urgent">Яаралтай</span><span class="chip" data-filter="near">Ойролцоо</span></div>
+            <div class="map-zoom"><button id="mapIn" aria-label="Томруулах">＋</button><button id="mapOut" aria-label="Жижигрүүлэх">−</button></div>
+            <div class="map-gps" id="mapGps"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
             <!-- bottom sheet (compact, horizontal) -->
             <div class="sheet">
               <div class="grab"></div>
@@ -1127,7 +1142,7 @@
           <div class="tabbar">
             <div class="tab" data-target="b1"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 19a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8"/></svg><span>Мэдэгдэл</span></div>
             <div class="tab active" data-target="b3"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg><span>Байршил</span></div>
-            <div class="tab qr" data-target="b2"><span class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3h7v7H3V3Zm2 2v3h3V5H5Zm9-2h7v7h-7V3Zm2 2v3h3V5h-3ZM3 14h7v7H3v-7Zm2 2v3h3v-3H5Zm11-2h2v2h-2v-2Zm3 0h2v2h-2v-2Zm-3 3h2v2h-2v-2Zm3 0h2v4h-4v-2h2v-2Z" fill="currentColor"/></svg></span><span>QR авах</span></div>
+            <div class="tab qr" data-target="b2"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3h7v7H3V3Zm2 2v3h3V5H5Zm9-2h7v7h-7V3Zm2 2v3h3V5h-3ZM3 14h7v7H3v-7Zm2 2v3h3v-3H5Zm11-2h2v2h-2v-2Zm3 0h2v2h-2v-2Zm-3 3h2v2h-2v-2Zm3 0h2v4h-4v-2h2v-2Z" fill="currentColor"/></svg><span>QR авах</span></div>
             <div class="tab" data-target="b4"><svg viewBox="0 0 24 24" fill="none"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Жагсаалт</span></div>
           </div>
         </div></div>
@@ -1177,19 +1192,28 @@
         <span class="stage-tag">🧾 ТҮҮХ</span>
         <div class="phone"><div class="notch"></div><div class="p-screen">
           <div class="statusbar"><span>9:41</span><span class="dots"><i></i><i></i><i></i></span></div>
-          <div class="ui-top"><div class="driver-chip"><div class="av">Б</div><div><div class="dn">Бат-Эрдэнэ</div><div class="dr">Өнөөдөр · 14 хайрцаг</div></div></div></div>
-          <div class="ui-body" style="gap:10px">
-            <div class="filter-row"><span class="chip on">Өнөөдөр</span><span class="chip">7 хоног</span><span class="chip">Сар</span></div>
-            <div class="list">
-              <div class="row-item"><div class="rno">4</div><div class="rinfo"><div class="rphone">СБД салбар</div><div class="rmeta">QR онгойлт · 4 хайрцаг</div></div><div class="rmeta" style="font-family:var(--mono)">14:24</div></div>
-              <div class="row-item"><div class="rno">3</div><div class="rinfo"><div class="rphone">Хан-Уул салбар</div><div class="rmeta">QR онгойлт · 3 хайрцаг</div></div><div class="rmeta" style="font-family:var(--mono)">12:10</div></div>
-              <div class="row-item"><div class="rno">7</div><div class="rinfo"><div class="rphone">Баянгол салбар</div><div class="rmeta">QR онгойлт · 7 хайрцаг</div></div><div class="rmeta" style="font-family:var(--mono)">09:45</div></div>
+          <div class="b4-main">
+            <div class="ui-top"><div class="driver-chip"><div class="av">Б</div><div><div class="dn">Бат-Эрдэнэ</div><div class="dr" id="b4Sub">Өнөөдөр · 14 хайрцаг</div></div></div></div>
+            <div class="ui-body" style="gap:10px">
+              <div class="filter-row">
+                <span class="chip on" data-period="today">Өнөөдөр</span>
+                <span class="chip" data-period="week">7 хоног</span>
+                <span class="chip" data-period="month">Сар</span>
+              </div>
+              <div class="list" id="b4List"></div>
+            </div>
+          </div>
+          <div class="b4-detail" hidden>
+            <div class="ui-top"><div class="ui-back" id="b4Back">‹</div><div class="ttl" id="b4DTitle">СБД салбар</div><div style="width:26px"></div></div>
+            <div class="ui-body" style="gap:9px">
+              <div class="ui-label" id="b4DMeta">14:24 · 4 хайрцаг цуглуулсан</div>
+              <div class="list" id="b4Boxes"></div>
             </div>
           </div>
           <div class="tabbar">
             <div class="tab" data-target="b1"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 19a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8"/></svg><span>Мэдэгдэл</span></div>
             <div class="tab" data-target="b3"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg><span>Байршил</span></div>
-            <div class="tab qr" data-target="b2"><span class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3h7v7H3V3Zm2 2v3h3V5H5Zm9-2h7v7h-7V3Zm2 2v3h3V5h-3ZM3 14h7v7H3v-7Zm2 2v3h3v-3H5Zm11-2h2v2h-2v-2Zm3 0h2v2h-2v-2Zm-3 3h2v2h-2v-2Zm3 0h2v4h-4v-2h2v-2Z" fill="currentColor"/></svg></span><span>QR авах</span></div>
+            <div class="tab qr" data-target="b2"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3h7v7H3V3Zm2 2v3h3V5H5Zm9-2h7v7h-7V3Zm2 2v3h3V5h-3ZM3 14h7v7H3v-7Zm2 2v3h3v-3H5Zm11-2h2v2h-2v-2Zm3 0h2v2h-2v-2Zm-3 3h2v2h-2v-2Zm3 0h2v4h-4v-2h2v-2Z" fill="currentColor"/></svg><span>QR авах</span></div>
             <div class="tab active" data-target="b4"><svg viewBox="0 0 24 24" fill="none"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Жагсаалт</span></div>
           </div>
         </div></div>
@@ -1201,9 +1225,10 @@
           <div class="blk"><h4>ЗОРИЛГО</h4><p>Жолоочийн нэрээр бүртгэгдсэн бүх нээлт, цуглуулалтын түүхийг хугацаагаар нэгтгэн харуулах. Тооцоо, хариуцлагын баримт.</p></div>
           <div class="blk"><h4>ГОЛ УРСГАЛ</h4>
             <ol class="flow">
-              <li>Цуглуулалтыг <b>огноо / салбар / хайрцгийн тоогоор</b> жагсаана.</li>
-              <li>Хугацааны <b>шүүлтүүр</b> (Өнөөдөр / 7 хоног / Сар).</li>
-              <li>Мөр дарахад <b>тухайн нээлтийн дэлгэрэнгүй</b>.</li>
+              <li>Хугацааны <b>шүүлтүүр</b> (Өнөөдөр / 7 хоног / Сар) — сонгоход жагсаалт ба нийт тоо шинэчлэгдэнэ.</li>
+              <li>Цуглуулалт бүрийг <b>салбар · хайрцгийн тоо · цаг</b>-аар жагсаана.</li>
+              <li>Мөр дээр дарахад <b>тухайн цуглуулалтын хайрцгууд</b> нээгдэнэ — хайрцгийн дугаар, эзний утас, эд зүйл (조회).</li>
+              <li>«‹» дарж жагсаалт руу буцна.</li>
             </ol>
           </div>
           <div class="blk"><h4>ӨГӨГДӨЛ · БҮРТГЭЛ</h4>
@@ -1256,6 +1281,8 @@
     if(id==='a2') resetA2();
     if(id==='a3') resetA3();
     if(id==='b2') resetB2();
+    if(id==='b0') resetB0();
+    if(id==='b4') resetB4();
   }
   /* ---- 5 секундын автомат буцалт (A2/A3 баталгааны дараа) ---- */
   let autoTO=null, autoIV=null;
@@ -1276,6 +1303,7 @@
 
   /* 클릭 위임: 뒤로(‹) · 기사 QR 팝업 열기/닫기 · 데모 인증 · data-target 이동 */
   document.addEventListener('click', e=>{
+    if(e.target.closest('#b4Back')){ closeB4Detail(); return; }   /* B4 дэлгэрэнгүйг хаах (дэлгэц солихгүй) */
     if(e.target.closest('.ui-back')){ goBack(); return; }
     if(e.target.closest('[data-open="driver"]')){ if(kmodal) kmodal.hidden=false; return; }
     if(e.target.closest('.demo-auth')){ show('b2'); b2ShowList(); return; }  /* 앱이 QR 스캔 → 리스트는 폰(B2)에 */
@@ -1403,6 +1431,90 @@
   document.getElementById('b2Scan')    && document.getElementById('b2Scan').addEventListener('click', b2ShowList);
   document.getElementById('b2Again')   && document.getElementById('b2Again').addEventListener('click', resetB2);
   document.getElementById('b2OpenAll') && document.getElementById('b2OpenAll').addEventListener('click', ()=>renderB2(true));
+
+  /* ---- B0 нэвтрэх ---- */
+  const b0Phone=document.getElementById('b0Phone'), b0Pw=document.getElementById('b0Pw'), b0Err=document.getElementById('b0Err');
+  function b0Login(){
+    const digits=(b0Phone && b0Phone.value||'').replace(/\D/g,'');
+    const pw=(b0Pw && b0Pw.value||'');
+    if(digits.length<6 || pw.length<1){
+      if(b0Err) b0Err.hidden=false;
+      [b0Phone,b0Pw].forEach(el=>{ if(el){ el.classList.add('a2-shake'); setTimeout(()=>el.classList.remove('a2-shake'),350); } });
+      return;
+    }
+    if(b0Err) b0Err.hidden=true;
+    show('b1');
+  }
+  function resetB0(){ if(b0Err) b0Err.hidden=true; }
+  document.getElementById('b0Login') && document.getElementById('b0Login').addEventListener('click', b0Login);
+
+  /* ---- B3 интерактив газрын зураг (зум · шүүлтүүр · пин сонголт) ---- */
+  const mapScene=document.getElementById('mapScene');
+  let mapZoom=1;
+  function applyZoom(){ if(mapScene) mapScene.style.transform='scale('+mapZoom.toFixed(2)+')'; }
+  document.getElementById('mapIn')  && document.getElementById('mapIn').addEventListener('click', ()=>{ mapZoom=Math.min(mapZoom+0.25,1.8); applyZoom(); });
+  document.getElementById('mapOut') && document.getElementById('mapOut').addEventListener('click', ()=>{ mapZoom=Math.max(mapZoom-0.25,0.8); applyZoom(); });
+  document.getElementById('mapGps') && document.getElementById('mapGps').addEventListener('click', ()=>{ mapZoom=1; applyZoom(); });
+  document.querySelectorAll('#b3 .map-filter .chip').forEach(c=>c.addEventListener('click', ()=>{
+    document.querySelectorAll('#b3 .map-filter .chip').forEach(x=>x.classList.remove('on'));
+    c.classList.add('on');
+    const map=document.querySelector('#b3 .map');
+    if(map) map.classList.toggle('urgent-only', c.dataset.filter==='urgent');
+  }));
+  document.querySelectorAll('#b3 .map .pin').forEach(p=>p.addEventListener('click', ()=>{
+    document.querySelectorAll('#b3 .map .pin').forEach(x=>x.classList.remove('selected'));
+    p.classList.add('selected');
+  }));
+
+  /* ---- B4 цуглуулалтын түүх (хугацаа шүүх · мөр дарж дэлгэрэнгүй харах) ---- */
+  const B4_DATA = {
+    today: [
+      {loc:'СБД салбар', time:'14:24', boxes:[{no:2,phone:'9911-2233',item:'Гутал'},{no:5,phone:'8800-1122',item:'Гутал'},{no:7,phone:'9090-4567',item:'Гутал ×2'},{no:11,phone:'9594-7788',item:'Гутал'}]},
+      {loc:'Хан-Уул салбар', time:'12:10', boxes:[{no:3,phone:'9911-0099',item:'Гутал'},{no:8,phone:'8811-2200',item:'Гутал'},{no:12,phone:'9595-3434',item:'Гутал'}]},
+      {loc:'Баянгол салбар', time:'09:45', boxes:[{no:1,phone:'8080-1111',item:'Гутал'},{no:4,phone:'9292-2222',item:'Гутал ×2'},{no:6,phone:'8383-3333',item:'Гутал'},{no:9,phone:'9494-4444',item:'Гутал'},{no:13,phone:'8585-5555',item:'Гутал'},{no:15,phone:'9696-6666',item:'Гутал'},{no:18,phone:'8787-7777',item:'Гутал'}]}
+    ],
+    week: [
+      {loc:'СБД салбар', time:'Лха 14:24', boxes:[{no:2,phone:'9911-2233',item:'Гутал'},{no:7,phone:'9090-4567',item:'Гутал'}]},
+      {loc:'Зайсан салбар', time:'Мяг 16:00', boxes:[{no:5,phone:'8800-1122',item:'Гутал'},{no:9,phone:'9594-7788',item:'Гутал'},{no:11,phone:'9911-0099',item:'Гутал'}]},
+      {loc:'Драгон төв', time:'Дав 11:30', boxes:[{no:3,phone:'8811-2200',item:'Гутал'},{no:6,phone:'9595-3434',item:'Гутал'},{no:10,phone:'8080-1111',item:'Гутал'},{no:14,phone:'9292-2222',item:'Гутал'}]}
+    ],
+    month: [
+      {loc:'СБД салбар', time:'6/24', boxes:[{no:2,phone:'9911-2233',item:'Гутал'},{no:7,phone:'9090-4567',item:'Гутал'},{no:11,phone:'9594-7788',item:'Гутал'}]},
+      {loc:'Баянгол салбар', time:'6/22', boxes:[{no:1,phone:'8080-1111',item:'Гутал'},{no:4,phone:'9292-2222',item:'Гутал'}]},
+      {loc:'Хан-Уул салбар', time:'6/20', boxes:[{no:3,phone:'9911-0099',item:'Гутал'},{no:8,phone:'8811-2200',item:'Гутал'},{no:12,phone:'9595-3434',item:'Гутал'},{no:15,phone:'9696-6666',item:'Гутал'}]},
+      {loc:'Зайсан салбар', time:'6/18', boxes:[{no:5,phone:'8800-1122',item:'Гутал'}]}
+    ]
+  };
+  const B4_LABEL = {today:'Өнөөдөр', week:'7 хоног', month:'Сар'};
+  let b4Period='today';
+  function renderB4(period){
+    b4Period=period;
+    const data=B4_DATA[period]||[];
+    const total=data.reduce((s,r)=>s+r.boxes.length,0);
+    const sub=document.getElementById('b4Sub'); if(sub) sub.textContent=(B4_LABEL[period]||'')+' · '+total+' хайрцаг';
+    const el=document.getElementById('b4List'); if(!el) return;
+    el.innerHTML=data.map((r,i)=>
+      `<div class="row-item b4-row" data-idx="${i}"><div class="rno">${r.boxes.length}</div><div class="rinfo"><div class="rphone">${r.loc}</div><div class="rmeta">QR онгойлт · ${r.boxes.length} хайрцаг</div></div><div class="rmeta" style="font-family:var(--mono);display:flex;align-items:center;gap:5px">${r.time}<span class="b4-chev">›</span></div></div>`
+    ).join('');
+  }
+  function openB4Detail(idx){
+    const r=(B4_DATA[b4Period]||[])[idx]; if(!r) return;
+    const t=document.getElementById('b4DTitle'); if(t) t.textContent=r.loc;
+    const m=document.getElementById('b4DMeta'); if(m) m.textContent=r.time+' · '+r.boxes.length+' хайрцаг цуглуулсан';
+    const bx=document.getElementById('b4Boxes'); if(bx) bx.innerHTML=r.boxes.map(b=>
+      `<div class="row-item"><div class="rno">${pad2(b.no)}</div><div class="rinfo"><div class="rphone">Хайрцаг №${pad2(b.no)} · ${b.item}</div><div class="rmeta">${b.phone}</div></div><span class="pill done">Цуглуулсан</span></div>`
+    ).join('');
+    const mn=document.querySelector('#b4 .b4-main'), dt=document.querySelector('#b4 .b4-detail');
+    if(mn) mn.hidden=true; if(dt) dt.hidden=false;
+  }
+  function closeB4Detail(){ const mn=document.querySelector('#b4 .b4-main'), dt=document.querySelector('#b4 .b4-detail'); if(mn) mn.hidden=false; if(dt) dt.hidden=true; }
+  function resetB4(){ closeB4Detail(); document.querySelectorAll('#b4 .filter-row .chip').forEach((x,i)=>x.classList.toggle('on', i===0)); renderB4('today'); }
+  document.querySelectorAll('#b4 .filter-row .chip').forEach(c=>c.addEventListener('click', ()=>{
+    document.querySelectorAll('#b4 .filter-row .chip').forEach(x=>x.classList.remove('on'));
+    c.classList.add('on'); renderB4(c.dataset.period);
+  }));
+  const b4ListEl=document.getElementById('b4List');
+  if(b4ListEl) b4ListEl.addEventListener('click', e=>{ const row=e.target.closest('.b4-row'); if(row) openB4Detail(+row.dataset.idx); });
   if(adVid && AD_PLAYLIST.length){
     adVid.addEventListener('playing', ()=>adVid.classList.add('on'));
     adVid.addEventListener('ended',  ()=>{ adIdx=(adIdx+1)%AD_PLAYLIST.length; adFails=0; playAd(adIdx); });
